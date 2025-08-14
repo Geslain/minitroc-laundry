@@ -12,6 +12,8 @@ export default function NewProductForm() {
             resolver: zodResolver(NewProductSchema)
         });
 
+    console.log(errors);
+
     const onSubmit = async (values: FormValues) => {
         const fd = new FormData();
         Object.entries(values).forEach(([k, v]) => {
@@ -46,47 +48,82 @@ export default function NewProductForm() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
-            <input placeholder="Name" {...register("name")} />
-            <textarea placeholder="Description" {...register("description")} />
-            <input type="number" step="0.01" placeholder="Price" {...register("price")} />
-            <select {...register("gender")}>
-                <option value="">(vide)</option>
-                <option value="M">M</option>
-                <option value="F">F</option>
-                <option value="Unisex">Unisex</option>
-            </select>
-            <input placeholder="Category" {...register("category")} />
-            <input placeholder="Size" {...register("size")} />
-            <select {...register("season")}>
-                <option value="">(vide)</option>
-                <option value="summer">Été</option>
-                <option value="winter">Hiver</option>
-                <option value="autumn">Automne</option>
-                <option value="spring">Printemps</option>
-                <option value="all seasons">Toutes saisons</option>
-            </select>
-            <Controller
-                name="photo"
-                control={control}
-                render={({field: {ref, name, onBlur, onChange}}) => {
-                    return (
-                        <input
-                            type="file"
-                            ref={ref}
-                            accept="image/*"
-                            name={name}
-                            onBlur={onBlur}
-                            onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                onChange(file);
-                            }}
-                        />
-                    );
-                }}
-            />
-            {errors.photo && <p className="text-red-500">{errors.photo.message as string}</p>}
-            <button type="submit" disabled={isSubmitting}>Créer</button>
-            {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+            <div className="flex flex-col gap-1">
+                <input placeholder="Name" {...register("name")} className={errors.name ? "border-red-500" : ""} />
+                {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <textarea placeholder="Description" {...register("description")} className={errors.description ? "border-red-500" : ""} />
+                {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <input type="number" step="0.01" placeholder="Price" {...register("price")} className={errors.price ? "border-red-500" : ""} />
+                {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <select {...register("gender")} className={errors.gender ? "border-red-500" : ""}>
+                    <option value="">(vide)</option>
+                    <option value="M">M</option>
+                    <option value="F">F</option>
+                    <option value="Unisex">Unisex</option>
+                </select>
+                {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <input placeholder="Category" {...register("category")} className={errors.category ? "border-red-500" : ""} />
+                {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <input placeholder="Size" {...register("size")} className={errors.size ? "border-red-500" : ""} />
+                {errors.size && <p className="text-red-500 text-sm">{errors.size.message}</p>}
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <select {...register("season")} className={errors.season ? "border-red-500" : ""}>
+                    <option value="">(vide)</option>
+                    <option value="summer">Été</option>
+                    <option value="winter">Hiver</option>
+                    <option value="autumn">Automne</option>
+                    <option value="spring">Printemps</option>
+                    <option value="all seasons">Toutes saisons</option>
+                </select>
+                {errors.season && <p className="text-red-500 text-sm">{errors.season.message}</p>}
+            </div>
+            <div className="flex flex-col gap-1">
+                <Controller
+                    name="photo"
+                    control={control}
+                    render={({field: {ref, name, onBlur, onChange}}) => {
+                        return (
+                            <input
+                                type="file"
+                                ref={ref}
+                                accept="image/*"
+                                name={name}
+                                onBlur={onBlur}
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    onChange(file);
+                                }}
+                                className={errors.photo ? "border-red-500" : ""}
+                            />
+                        );
+                    }}
+                />
+                {errors.photo && <p className="text-red-500 text-sm">{errors.photo.message}</p>}
+            </div>
+            <button 
+                type="submit" 
+                disabled={isSubmitting} 
+                className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            >
+                {isSubmitting ? "Création en cours..." : "Créer"}
+            </button>
         </form>
     );
 }

@@ -4,7 +4,7 @@ import {GenderSchema, SeasonSchema} from "../../../prisma/generated/zod";
 export const NewProductSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
     description: z.string().optional(),
-    price: z.number().min(0, "Le prix doit être positif"),
+    price: z.coerce.number().min(0, "Le prix doit être positif"),
     gender: z.enum(["", ...GenderSchema.options]).default(""),
     category: z.string().optional(),
     size: z.string().min(1, "La taille est requise"),

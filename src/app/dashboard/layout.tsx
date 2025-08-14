@@ -8,8 +8,9 @@ export default function DashboardLayout({children}: Readonly<{
         <header className={"flex justify-between p-4 items-center"}>
             <div className={'flex gap-4'}>
                 <span><Link href={"/dashboard"}>Minitroc Laundry</Link></span>
-                <ul className={"list-none"}>
-                    <li><Link href={"/dashboard/new-product"}>Nouveau produit</Link></li>
+                <ul className={"list-none flex gap-4"}>
+                    <li><Link href={"/dashboard/products/new"}>Nouveau produit</Link></li>
+                    <li><Link href={"/dashboard/products"}>Liste produits</Link></li>
                 </ul>
             </div>
             <SignOutButton/>
