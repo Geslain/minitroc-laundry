@@ -6,6 +6,6 @@ export const SignOutButton = () => {
     const {signOut} = useClerk()
 
     return (
-        <button onClick={() => signOut({redirectUrl: '/'})}>Sign out</button>
+        <button type={"button"} onClick={() => signOut({redirectUrl: '/'})}>Sign out</button>
     )
 }

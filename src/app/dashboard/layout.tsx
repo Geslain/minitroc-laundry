@@ -5,7 +5,7 @@ export default function DashboardLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
     return <div className={"min-h-screen w-full"}>
-        <header className={"flex  justify-between p-4"}>
+        <header className={"flex justify-between p-4 items-center"}>
             <div className={'flex gap-4'}>
                 <span><Link href={"/dashboard"}>Minitroc Laundry</Link></span>
                 <ul className={"list-none"}>

@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+header {
+  @apply p-4 shadow;
+}
+
+input, select, textarea {
+  @apply border-gray-300 border-1 p-3 rounded-xl;
+}
+
+button {
+  @apply bg-blue-500 text-white p-2 rounded-xl cursor-pointer;
+}

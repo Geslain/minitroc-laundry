@@ -45,7 +45,7 @@ export default function NewProductForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
             <input placeholder="Name" {...register("name")} />
             <textarea placeholder="Description" {...register("description")} />
             <input type="number" step="0.01" placeholder="Price" {...register("price")} />
@@ -85,9 +85,7 @@ export default function NewProductForm() {
                 }}
             />
             {errors.photo && <p className="text-red-500">{errors.photo.message as string}</p>}
-            <button type="submit" disabled={isSubmitting}
-                    className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Créer
-            </button>
+            <button type="submit" disabled={isSubmitting}>Créer</button>
             {errors.name && <p className="text-red-500">{errors.name.message}</p>}
         </form>
     );
