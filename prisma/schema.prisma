@@ -1,0 +1,54 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "zod-prisma-types"
+}
+
+enum Gender {
+  M
+  F
+  Unisex
+  Empty // représente ""
+}
+
+enum Season {
+  summer
+  winter
+  autumn
+  spring
+  all_seasons
+  Empty // représente ""
+}
+
+model User {
+  id           String    @id @default(cuid())
+  clerkUserId  String    @unique
+  email        String?   @unique
+  createdAt    DateTime  @default(now())
+  products     Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  price       Float     @default(0)
+  gender      Gender    @default(Empty)
+  category    String?
+  size        String
+  season      Season    @default(Empty)
+  photo       String    // URL publique
+  photoKey    String    // chemin/clé dans le bucket
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+  @@index([userId])
+}
