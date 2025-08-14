@@ -3,6 +3,8 @@ import {Controller, useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {NewProductSchema} from "@/lib/validators/product";
+import {addProduct} from "@/app/actions/products";
+import {toast} from "react-toastify";
 
 type FormValues = z.input<typeof NewProductSchema>;
 
@@ -11,8 +13,6 @@ export default function NewProductForm() {
         useForm<FormValues>({
             resolver: zodResolver(NewProductSchema)
         });
-
-    console.log(errors);
 
     const onSubmit = async (values: FormValues) => {
         const fd = new FormData();
@@ -31,18 +31,16 @@ export default function NewProductForm() {
         });
 
         try {
-            const res = await fetch("/api/products", {method: "POST", body: fd});
-            if (!res.ok) {
-                const errorData = await res.json();
-                console.error(errorData);
-                alert(`Erreur: ${errorData.message || 'Une erreur est survenue'}`);
+            const response= await addProduct(fd);
+            if ("error" in response) {
+                toast(`Erreur: ${response.error || 'Une erreur est survenue'}`, { type: "error"});
                 return;
             }
             reset();
-            alert("Produit créé ✅");
+            toast("Produit créé ✅", { type: "success"});
         } catch (error) {
             console.error("Erreur lors de la soumission:", error);
-            alert("Erreur lors de la communication avec le serveur");
+            toast("Erreur lors de la communication avec le serveur", { type: "error"});
         }
     };
 

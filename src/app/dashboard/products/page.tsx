@@ -1,28 +1,8 @@
 import ProductCard from "@/components/product-card";
-import {PrismaClient, Product} from "@prisma/client";
-import {auth} from "@clerk/nextjs/server";
-import {NextResponse} from "next/server";
-
-type Props = {
-    products: Product[];
-}
+import {getProducts} from "@/app/actions/products";
 
 export default async function ProductsPage() {
-    const { userId } = await auth();
-    const prisma = new PrismaClient()
-
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const user = await prisma.user.upsert({
-        where: { clerkUserId: userId },
-        update: {},
-        create: { clerkUserId: userId },
-    });
-
-    const products = await prisma.product.findMany({
-        where: { userId: user.id },
-        orderBy: { createdAt: "desc" },
-    });
+    const products = await getProducts()
 
     return <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Produits</h1>

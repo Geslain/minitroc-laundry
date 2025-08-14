@@ -1,10 +1,12 @@
 import {SignOutButton} from "@/components/sign-out-button";
 import Link from "next/link";
+import {ToastContainer} from "react-toastify";
 
 export default function DashboardLayout({children}: Readonly<{
     children: React.ReactNode;
 }>) {
-    return <div className={"min-h-screen w-full"}>
+    return <div className={"min-h-screen w-full h-[100vh] flex flex-col"}>
+        <ToastContainer />
         <header className={"flex justify-between p-4 items-center"}>
             <div className={'flex gap-4'}>
                 <span><Link href={"/dashboard"}>Minitroc Laundry</Link></span>
@@ -15,7 +17,7 @@ export default function DashboardLayout({children}: Readonly<{
             </div>
             <SignOutButton/>
         </header>
-        <main>
+        <main className={"overflow-y-auto"}>
             {children}
         </main>
     </div>
