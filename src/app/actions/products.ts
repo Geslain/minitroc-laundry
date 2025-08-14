@@ -4,6 +4,7 @@ import {supabaseServer} from "@/lib/supabaseServer";
 import {getCurrentUser} from "@/lib/user";
 import {z} from "zod";
 import {mapGender, mapSeason} from "@/lib/product";
+import {revalidatePath} from "next/cache";
 
 const createSchema = z.object({
     name: z.string().trim().min(1),
@@ -73,7 +74,6 @@ export async function addProduct(formData: FormData) {
     const {data: publicUrlData} = supabase.storage.from("photos").getPublicUrl(photoKey);
     const photoUrl = publicUrlData.publicUrl;
 
-
     return prisma.product.create({
         data: {
             userId: user.id,
@@ -88,4 +88,41 @@ export async function addProduct(formData: FormData) {
             photoKey: photoKey,
         },
     });
+}
+
+export async function deleteProduct(id: string) {
+    const {userId} = await getCurrentUser()
+    const supabase = supabaseServer();
+
+    const user = await prisma.user.upsert({
+        where: {clerkUserId: userId},
+        update: {},
+        create: {clerkUserId: userId},
+    });
+
+    const product = await prisma.product.findUnique({
+        where: { id, userId: user.id },
+        select: { photoKey: true, name: true }
+    });
+
+    if (!product) {
+       return { error: 'Produit non trouvé' };
+    }
+
+    const { error: storageError } = await supabase.storage
+        .from("photos")
+        .remove([product.photoKey]);
+
+    if (storageError) {
+        return {error: 'Erreur lors de la suppression du fichier:'};
+    }
+
+    await prisma.product.delete({
+        where: { id, userId: user.id }
+    })
+
+    revalidatePath('/dashboard/products')
+    return {
+        success: true,
+    }
 }

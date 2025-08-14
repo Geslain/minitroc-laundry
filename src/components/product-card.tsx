@@ -1,6 +1,10 @@
+"use client"
 import Image from 'next/image';
 import { Product } from '@prisma/client';
 import { GenderType, SeasonType } from '../../prisma/generated/zod';
+import {deleteProduct} from "@/app/actions/products";
+import {toast} from "react-toastify";
+import {TrashIcon} from "lucide-react";
 
 type ProductCardProps = {
   product: Product;
@@ -35,6 +39,17 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
     return translations[season];
   };
+
+  const handleDelete = async () => {
+    const response = await deleteProduct(product.id)
+
+    if("error" in response) {
+      toast(`Erreur lors de la suppression: ${response.error}`, { type: "error" });
+      return;
+    }
+
+    toast("Produit supprimé", { type: "success" });
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-lg">
@@ -77,8 +92,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div className="mt-4 flex justify-between items-center">
           <span className="text-xl font-bold text-indigo-600">{formatPrice(product.price)}</span>
-          <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm transition-colors">
-            Voir détails
+          <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm transition-colors" onClick={() => handleDelete()}>
+            <TrashIcon className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </div>

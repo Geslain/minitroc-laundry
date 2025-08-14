@@ -34,5 +34,5 @@ input, select, textarea {
 }
 
 button {
-  @apply bg-blue-500 text-white p-2 rounded-xl cursor-pointer;
+  @apply p-2 rounded-xl cursor-pointer;
 }
