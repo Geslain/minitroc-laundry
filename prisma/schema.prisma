@@ -58,6 +58,16 @@ enum Size {
   Empty // représente ""
 }
 
+enum Status {
+  finished // terminé
+  in_progress // en cours
+  collected // collecté
+  pending // en attente
+  sold // vendu
+  reserved // réservé
+  available // disponible
+}
+
 model User {
   id          String    @id @default(cuid())
   clerkUserId String    @unique
@@ -76,6 +86,7 @@ model Product {
   category    Category @default(Empty)
   size        Size     @default(Empty)
   season      Season   @default(Empty)
+  status      Status   @default(collected)
   photo       String // URL publique
   photoKey    String // chemin/clé dans le bucket
   createdAt   DateTime @default(now())

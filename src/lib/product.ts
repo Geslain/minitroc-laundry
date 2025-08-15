@@ -1,4 +1,4 @@
-import {Category, Gender, Season, Size} from "@prisma/client";
+import {Category, Gender, Season, Size, Status} from "@prisma/client";
 
 // Fonctions de validation simples
 export function mapGender(input: string): Gender {
@@ -16,6 +16,11 @@ export function mapCategory(input: string): Category {
 export function mapSize(input: string): Size {
     return Object.values(Size).includes(input as Size) ? input as Size : Size.Empty;
 }
+
+export function mapStatus(input: string): Status {
+    return Object.values(Status).includes(input as Status) ? input as Status : Status.collected;
+}
+
 
 export const genderLabels: Record<Gender, string> = {
     [Gender.Empty]: '',
@@ -62,4 +67,14 @@ export const sizeLabels: Record<Size, string> = {
     [Size.four_years]: "4 ans",
     [Size.five_years]: "5 ans",
     [Size.six_years]: "6 ans",
+};
+
+export const statusLabels: Record<Status, string> = {
+    [Status.finished]: "Terminé",
+    [Status.in_progress]: "En cours",
+    [Status.collected]: "Collecté",
+    [Status.pending]: "En attente",
+    [Status.sold]: "Vendu",
+    [Status.reserved]: "Réservé",
+    [Status.available]: "Disponible"
 };
