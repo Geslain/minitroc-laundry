@@ -69,15 +69,15 @@ export default function NewProductForm() {
     }
 
     function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        setValue("price", calculatePrice(getValues("brand"), e.target.value, getValues("state")))
+        setValue("price", calculatePrice(getValues("brand"), e.target.value as Category, getValues("state")))
     }
 
     function handleBrandChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        setValue("price", calculatePrice(e.target.value, getValues("category"), getValues("state")))
+        setValue("price", calculatePrice(e.target.value as Brand, getValues("category"), getValues("state")))
     }
 
     function handleStateChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        setValue("price", calculatePrice(getValues("brand"), getValues("category"), e.target.value,))
+        setValue("price", calculatePrice(getValues("brand"), getValues("category"), e.target.value as State))
     }
 
     return (

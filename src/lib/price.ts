@@ -58,6 +58,7 @@ export const stateValues: Record<State, number> = {
     [State.donation]: 0
 };
 
-export function calculatePrice(brand: Brand, category: Category, state: State) {
+export function calculatePrice(brand: Brand | undefined, category: Category | undefined, state: State | undefined) {
+    if(!brand || !category || !state) return 0;
     return brandValues[brand] * categoryValues[category] * stateValues[state];
 }
