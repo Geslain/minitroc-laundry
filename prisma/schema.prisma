@@ -19,20 +19,34 @@ enum Gender {
 }
 
 enum Season {
-  summer
-  winter
-  autumn
-  spring
-  all_seasons
+  mid_season // Mi-saison
+  hot // Chaud
+  cold // Froid
+  Empty // représente ""
+}
+
+enum Category {
+  jacket // Veste
+  socks // Chaussettes
+  accessories // Accessoires
+  pajamas // Pyjama
+  set // Ensemble
+  dress // Robe / Combishort
+  coat // Blouson / Manteau
+  tshirt_short // T-shirt MC (Manches Courtes)
+  tshirt_long // T-shirt ML (Manches Longues)
+  sweatshirt // Sweat
+  pants // Pantalon/Bas
+  bodysuit // Bodies
   Empty // représente ""
 }
 
 model User {
-  id           String    @id @default(cuid())
-  clerkUserId  String    @unique
-  email        String?   @unique
-  createdAt    DateTime  @default(now())
-  products     Product[]
+  id          String    @id @default(cuid())
+  clerkUserId String    @unique
+  email       String?   @unique
+  createdAt   DateTime  @default(now())
+  products    Product[]
 }
 
 model Product {
@@ -40,15 +54,16 @@ model Product {
   userId      String
   name        String
   description String?
-  price       Float     @default(0)
-  gender      Gender    @default(Empty)
-  category    String?
+  price       Float    @default(0)
+  gender      Gender   @default(Empty)
+  category    Category @default(Empty)
   size        String
-  season      Season    @default(Empty)
-  photo       String    // URL publique
-  photoKey    String    // chemin/clé dans le bucket
-  createdAt   DateTime  @default(now())
+  season      Season   @default(Empty)
+  photo       String // URL publique
+  photoKey    String // chemin/clé dans le bucket
+  createdAt   DateTime @default(now())
 
-  user        User      @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
   @@index([userId])
 }

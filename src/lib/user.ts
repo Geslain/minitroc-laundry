@@ -1,8 +1,14 @@
 import {auth} from "@clerk/nextjs/server";
+import prisma from "@/lib/db";
 
 export async function getCurrentUser() {
-    const user = await auth();
+    const session = await auth();
 
-    if (!user.userId) throw new Error("Unauthorized");
-    return user
+    if (!session.userId) throw new Error("Unauthorized");
+
+    return prisma.user.upsert({
+        where: {clerkUserId: session.userId},
+        update: {},
+        create: {clerkUserId: session.userId},
+    });
 }

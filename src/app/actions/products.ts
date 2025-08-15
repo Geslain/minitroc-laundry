@@ -2,28 +2,11 @@
 import prisma from "@/lib/db";
 import {supabaseServer} from "@/lib/supabaseServer";
 import {getCurrentUser} from "@/lib/user";
-import {z} from "zod";
-import {mapGender, mapSeason} from "@/lib/product";
 import {revalidatePath} from "next/cache";
-
-const createSchema = z.object({
-    name: z.string().trim().min(1),
-    description: z.string().trim().optional().or(z.literal("")),
-    price: z.coerce.number().min(0),
-    gender: z.enum(["M", "F", "Unisex", ""]).default(""),
-    category: z.string().trim().optional().or(z.literal("")),
-    size: z.string().trim().min(1),
-    season: z.enum(["summer", "winter", "autumn", "spring", "all seasons", ""]).default(""),
-});
+import { createSchema } from "@/lib/validators/product";
 
 export async function getProducts() {
-    const {userId} = await getCurrentUser()
-
-    const user = await prisma.user.upsert({
-        where: {clerkUserId: userId},
-        update: {},
-        create: {clerkUserId: userId},
-    });
+    const user = await getCurrentUser()
 
     return prisma.product.findMany({
         where: {userId: user.id},
@@ -32,13 +15,7 @@ export async function getProducts() {
 }
 
 export async function addProduct(formData: FormData) {
-    const {userId} = await getCurrentUser()
-
-    const user = await prisma.user.upsert({
-        where: {clerkUserId: userId},
-        update: {},
-        create: {clerkUserId: userId},
-    });
+    const user = await getCurrentUser()
 
     // multipart form
     const file = formData.get("photo") as File | null;
@@ -48,7 +25,7 @@ export async function addProduct(formData: FormData) {
 
     // champs textuels
     const data = {
-        name: String(formData.get("name") || ""),
+        name: String(formData.getAll("name") || ""),
         description: String(formData.get("description") || ""),
         price: Number(formData.get("price") || 0),
         gender: String(formData.get("gender") || ""),
@@ -56,6 +33,7 @@ export async function addProduct(formData: FormData) {
         size: String(formData.get("size") || ""),
         season: String(formData.get("season") || ""),
     };
+
     const parsed = createSchema.safeParse(data);
     if (!parsed.success) {
         return { error: parsed.error.message };
@@ -77,13 +55,7 @@ export async function addProduct(formData: FormData) {
     return prisma.product.create({
         data: {
             userId: user.id,
-            name: parsed.data.name.trim(),
-            description: parsed.data.description?.trim() ?? null,
-            price: parsed.data.price,
-            gender: mapGender(parsed.data.gender),
-            category: parsed.data.category?.trim() ?? null,
-            size: parsed.data.size.trim(),
-            season: mapSeason(parsed.data.season),
+            ...parsed.data,
             photo: photoUrl,
             photoKey: photoKey,
         },
@@ -91,14 +63,8 @@ export async function addProduct(formData: FormData) {
 }
 
 export async function deleteProduct(id: string) {
-    const {userId} = await getCurrentUser()
+    const user = await getCurrentUser()
     const supabase = supabaseServer();
-
-    const user = await prisma.user.upsert({
-        where: {clerkUserId: userId},
-        update: {},
-        create: {clerkUserId: userId},
-    });
 
     const product = await prisma.product.findUnique({
         where: { id, userId: user.id },
