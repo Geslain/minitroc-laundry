@@ -32,7 +32,3 @@ header {
 input, select, textarea {
   @apply border-gray-300 border-1 p-3 rounded-xl;
 }
-
-button {
-  @apply p-2 rounded-xl cursor-pointer;
-}

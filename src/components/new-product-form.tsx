@@ -6,9 +6,18 @@ import {newProductSchema} from "@/lib/validators/product";
 import {addProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
 import Camera from "./camera";
-import {categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels, statusLabels, brandLabels} from "@/lib/product";
-import {Category, Gender, Season, Size, Status, State, Brand} from "@prisma/client";
+import {
+    brandLabels,
+    categoryLabels,
+    genderLabels,
+    seasonLabels,
+    sizeLabels,
+    stateLabels,
+    statusLabels
+} from "@/lib/product";
+import {Brand, Category, Gender, Season, Size, State, Status} from "@prisma/client";
 import {calculatePrice} from "@/lib/price";
+import Button from "@/components/button";
 
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
@@ -55,8 +64,8 @@ export default function NewProductForm() {
         }
     };
 
-    function handleCapture(imageSrc: Blob) {
-        setValue("photo", new File([imageSrc], "temp"))
+    function handleCapture(imageSrc: Blob | undefined) {
+        setValue("photo", imageSrc ? new File([imageSrc], "temp") : imageSrc)
     }
 
     function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -86,22 +95,28 @@ export default function NewProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <select {...register("category")} className={errors.category ? "border-red-500" : ""} onChange={handleCategoryChange}>
-                        {Object.entries(categoryLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
+                    <select {...register("category")} className={errors.category ? "border-red-500" : ""}
+                            onChange={handleCategoryChange}>
+                        {Object.entries(categoryLabels).map(([key, value]) => (<option key={key} value={key}
+                                                                                       disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
                     </select>
                     {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <select {...register("brand")} className={errors.brand ? "border-red-500" : ""} onChange={handleBrandChange}>
-                        {Object.entries(brandLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une marque)"}</option>))}
+                    <select {...register("brand")} className={errors.brand ? "border-red-500" : ""}
+                            onChange={handleBrandChange}>
+                        {Object.entries(brandLabels).map(([key, value]) => (<option key={key} value={key}
+                                                                                    disabled={!value}>{value || "(Sélectionnez une marque)"}</option>))}
                     </select>
                     {errors.brand && <p className="text-red-500 text-sm">{errors.brand.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <select {...register("state")} className={errors.state ? "border-red-500" : ""} onChange={handleStateChange}>
-                        {Object.entries(stateLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
+                    <select {...register("state")} className={errors.state ? "border-red-500" : ""}
+                            onChange={handleStateChange}>
+                        {Object.entries(stateLabels).map(([key, value]) => (<option key={key} value={key}
+                                                                                    disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
                     </select>
                     {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
                 </div>
@@ -114,27 +129,31 @@ export default function NewProductForm() {
 
                 <div className="flex flex-col gap-1">
                     <select {...register("gender")} className={errors.gender ? "border-red-500" : ""}>
-                        {Object.entries(genderLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez un genre)"}</option>))}
+                        {Object.entries(genderLabels).map(([key, value]) => (<option key={key} value={key}
+                                                                                     disabled={!value}>{value || "(Sélectionnez un genre)"}</option>))}
                     </select>
                     {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
                     <select {...register("size")} className={errors.size ? "border-red-500" : ""}>
-                        {Object.entries(sizeLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une taille)"}</option>))}
+                        {Object.entries(sizeLabels).map(([key, value]) => (<option key={key} value={key}
+                                                                                   disabled={!value}>{value || "(Sélectionnez une taille)"}</option>))}
                     </select>
                     {errors.size && <p className="text-red-500 text-sm">{errors.size.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
                     <select {...register("season")} className={errors.season ? "border-red-500" : ""}>
-                        {Object.entries(seasonLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une saison)"}</option>))}
+                        {Object.entries(seasonLabels).map(([key, value]) => (<option key={key} value={key}
+                                                                                     disabled={!value}>{value || "(Sélectionnez une saison)"}</option>))}
                     </select>
                     {errors.season && <p className="text-red-500 text-sm">{errors.season.message}</p>}
                 </div>
                 <div className="flex flex-col gap-1">
                     <select {...register("status")} className={"text-gray-400 cursor-not-allowed"} disabled>
-                        {Object.entries(statusLabels).map(([key, value]) => (<option key={key} value={key}>{value}</option>))}
+                        {Object.entries(statusLabels).map(([key, value]) => (
+                            <option key={key} value={key}>{value}</option>))}
                     </select>
                     {errors.status && <p className="text-red-500 text-sm">{errors.status.message}</p>}
                 </div>
@@ -161,14 +180,11 @@ export default function NewProductForm() {
                     />
                     {errors.photo && <p className="text-red-500 text-sm">{errors.photo.message}</p>}
                 </div>
-                <button
+                <Button
                     type="submit"
+                    label={isSubmitting ? "Création en cours..." : "Créer"}
                     disabled={isSubmitting}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-                >
-                    {isSubmitting ? "Création en cours..." : "Créer"}
-                </button>
-
+                />
             </form>
             <div>
                 <Camera onCapture={handleCapture}/>

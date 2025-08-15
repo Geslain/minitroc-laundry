@@ -5,6 +5,7 @@ import {deleteProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
 import {TrashIcon} from "lucide-react";
 import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels} from "@/lib/product";
+import Button from "@/components/button";
 
 type ProductCardProps = {
   product: Product;
@@ -42,7 +43,7 @@ export default function ProductCard({ product }: Readonly<ProductCardProps>) {
 
       <div className="p-4 flex flex-col grow">
         <h3 className="text-lg font-semibold truncate">{product.name}</h3>
-        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description || 'Aucune description'}</p>
+        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description ?? 'Aucune description'}</p>
 
         <div className="mt-3 flex flex-wrap gap-2">
           {product.gender !== 'Empty' && (
@@ -76,9 +77,7 @@ export default function ProductCard({ product }: Readonly<ProductCardProps>) {
 
         <div className="mt-4 flex justify-between grow items-end">
           <span className="text-xl font-bold text-indigo-600">{formatPrice(product.price)}</span>
-          <button className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm transition-colors" onClick={() => handleDelete()}>
-            <TrashIcon className="w-4 h-4" aria-hidden="true" />
-          </button>
+          <Button icon={TrashIcon} variant={"danger"} onClick={() => handleDelete()}/>
         </div>
       </div>
     </div>
