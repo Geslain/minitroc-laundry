@@ -1,4 +1,4 @@
-import {Category, Gender, Season, Size, Status, State} from "@prisma/client";
+import {Category, Gender, Season, Size, Status, State, Brand} from "@prisma/client";
 
 // Fonctions de validation simples
 export function mapGender(input: string): Gender {
@@ -23,6 +23,10 @@ export function mapStatus(input: string): Status {
 
 export function mapState(input: string): State {
     return Object.values(State).includes(input as State) ? input as State : State.good;
+}
+
+export function mapBrand(input: string): Brand {
+    return Object.values(Brand).includes(input as Brand) ? input as Brand : Brand.Empty;
 }
 
 
@@ -91,3 +95,36 @@ export const stateLabels: Record<State, string> = {
     [State.donation]: "Don pur"
 };
 
+export const brandLabels: Record<Brand, string> = {
+    [Brand.jacadi]: "Jacadi",
+    [Brand.petit_bateau]: "Petit Bateau",
+    [Brand.sergent_major]: "Sergent Major",
+    [Brand.zara]: "Zara",
+    [Brand.hm]: "H&M",
+    [Brand.kiabi]: "Kiabi",
+    [Brand.no_name]: "No name",
+    [Brand.bonpoint]: "Bonpoint",
+    [Brand.tartine_et_chocolat]: "Tartine et Chocolat",
+    [Brand.bonton]: "Bonton",
+    [Brand.okaidi]: "Okaïdi",
+    [Brand.dpam]: "DPAM",
+    [Brand.tape_a_loeil]: "Tape à l'œil",
+    [Brand.vertbaudet]: "Vertbaudet",
+    [Brand.catimini]: "Catimini",
+    [Brand.ca]: "C&A",
+    [Brand.tex_carrefour]: "Tex (Carrefour)",
+    [Brand.in_extenso_auchan]: "In Extenso (Auchan)",
+    [Brand.gemo]: "Gémo",
+    [Brand.zeeman]: "Zeeman",
+    [Brand.primark]: "Primark",
+    [Brand.lidl]: "Lidl",
+    [Brand.monoprix]: "Monoprix",
+    [Brand.la_redoute]: "La Redoute",
+    [Brand.orchestra]: "Orchestra",
+    [Brand.grain_de_ble]: "Grain de Blé",
+    [Brand.boutchou_monoprix]: "Bout'chou (Monoprix)",
+    [Brand.ikks]: "IKKS",
+    [Brand.absorba]: "Absorba",
+    [Brand.natalys]: "Natalys",
+    [Brand.Empty]: ""
+};

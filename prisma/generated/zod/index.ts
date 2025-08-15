@@ -14,7 +14,7 @@ export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCo
 
 export const UserScalarFieldEnumSchema = z.enum(['id','clerkUserId','email','createdAt']);
 
-export const ProductScalarFieldEnumSchema = z.enum(['id','userId','name','description','price','gender','category','size','season','status','state','photo','photoKey','createdAt']);
+export const ProductScalarFieldEnumSchema = z.enum(['id','userId','name','description','price','gender','category','size','season','status','state','brand','photo','photoKey','createdAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -46,6 +46,10 @@ export const StateSchema = z.enum(['new','very_good','good','fair','donation']);
 
 export type StateType = `${z.infer<typeof StateSchema>}`
 
+export const BrandSchema = z.enum(['jacadi','petit_bateau','sergent_major','zara','hm','kiabi','no_name','bonpoint','tartine_et_chocolat','bonton','okaidi','dpam','tape_a_loeil','vertbaudet','catimini','ca','tex_carrefour','in_extenso_auchan','gemo','zeeman','primark','lidl','monoprix','la_redoute','orchestra','grain_de_ble','boutchou_monoprix','ikks','absorba','natalys','Empty']);
+
+export type BrandType = `${z.infer<typeof BrandSchema>}`
+
 /////////////////////////////////////////
 // MODELS
 /////////////////////////////////////////
@@ -74,6 +78,7 @@ export const ProductSchema = z.object({
   season: SeasonSchema,
   status: StatusSchema,
   state: StateSchema,
+  brand: BrandSchema,
   id: z.string().cuid(),
   userId: z.string(),
   name: z.string(),
@@ -144,6 +149,7 @@ export const ProductSelectSchema: z.ZodType<Prisma.ProductSelect> = z.object({
   season: z.boolean().optional(),
   status: z.boolean().optional(),
   state: z.boolean().optional(),
+  brand: z.boolean().optional(),
   photo: z.boolean().optional(),
   photoKey: z.boolean().optional(),
   createdAt: z.boolean().optional(),
@@ -248,6 +254,7 @@ export const ProductWhereInputSchema: z.ZodType<Prisma.ProductWhereInput> = z.ob
   season: z.union([ z.lazy(() => EnumSeasonFilterSchema),z.lazy(() => SeasonSchema) ]).optional(),
   status: z.union([ z.lazy(() => EnumStatusFilterSchema),z.lazy(() => StatusSchema) ]).optional(),
   state: z.union([ z.lazy(() => EnumStateFilterSchema),z.lazy(() => StateSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => EnumBrandFilterSchema),z.lazy(() => BrandSchema) ]).optional(),
   photo: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   photoKey: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -266,6 +273,7 @@ export const ProductOrderByWithRelationInputSchema: z.ZodType<Prisma.ProductOrde
   season: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
   state: z.lazy(() => SortOrderSchema).optional(),
+  brand: z.lazy(() => SortOrderSchema).optional(),
   photo: z.lazy(() => SortOrderSchema).optional(),
   photoKey: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -290,6 +298,7 @@ export const ProductWhereUniqueInputSchema: z.ZodType<Prisma.ProductWhereUniqueI
   season: z.union([ z.lazy(() => EnumSeasonFilterSchema),z.lazy(() => SeasonSchema) ]).optional(),
   status: z.union([ z.lazy(() => EnumStatusFilterSchema),z.lazy(() => StatusSchema) ]).optional(),
   state: z.union([ z.lazy(() => EnumStateFilterSchema),z.lazy(() => StateSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => EnumBrandFilterSchema),z.lazy(() => BrandSchema) ]).optional(),
   photo: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   photoKey: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -308,6 +317,7 @@ export const ProductOrderByWithAggregationInputSchema: z.ZodType<Prisma.ProductO
   season: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
   state: z.lazy(() => SortOrderSchema).optional(),
+  brand: z.lazy(() => SortOrderSchema).optional(),
   photo: z.lazy(() => SortOrderSchema).optional(),
   photoKey: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -333,6 +343,7 @@ export const ProductScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Produ
   season: z.union([ z.lazy(() => EnumSeasonWithAggregatesFilterSchema),z.lazy(() => SeasonSchema) ]).optional(),
   status: z.union([ z.lazy(() => EnumStatusWithAggregatesFilterSchema),z.lazy(() => StatusSchema) ]).optional(),
   state: z.union([ z.lazy(() => EnumStateWithAggregatesFilterSchema),z.lazy(() => StateSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => EnumBrandWithAggregatesFilterSchema),z.lazy(() => BrandSchema) ]).optional(),
   photo: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   photoKey: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -402,6 +413,7 @@ export const ProductCreateInputSchema: z.ZodType<Prisma.ProductCreateInput> = z.
   season: z.lazy(() => SeasonSchema).optional(),
   status: z.lazy(() => StatusSchema).optional(),
   state: z.lazy(() => StateSchema).optional(),
+  brand: z.lazy(() => BrandSchema).optional(),
   photo: z.string(),
   photoKey: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -420,6 +432,7 @@ export const ProductUncheckedCreateInputSchema: z.ZodType<Prisma.ProductUnchecke
   season: z.lazy(() => SeasonSchema).optional(),
   status: z.lazy(() => StatusSchema).optional(),
   state: z.lazy(() => StateSchema).optional(),
+  brand: z.lazy(() => BrandSchema).optional(),
   photo: z.string(),
   photoKey: z.string(),
   createdAt: z.coerce.date().optional()
@@ -436,6 +449,7 @@ export const ProductUpdateInputSchema: z.ZodType<Prisma.ProductUpdateInput> = z.
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -454,6 +468,7 @@ export const ProductUncheckedUpdateInputSchema: z.ZodType<Prisma.ProductUnchecke
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -471,6 +486,7 @@ export const ProductCreateManyInputSchema: z.ZodType<Prisma.ProductCreateManyInp
   season: z.lazy(() => SeasonSchema).optional(),
   status: z.lazy(() => StatusSchema).optional(),
   state: z.lazy(() => StateSchema).optional(),
+  brand: z.lazy(() => BrandSchema).optional(),
   photo: z.string(),
   photoKey: z.string(),
   createdAt: z.coerce.date().optional()
@@ -487,6 +503,7 @@ export const ProductUpdateManyMutationInputSchema: z.ZodType<Prisma.ProductUpdat
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -504,6 +521,7 @@ export const ProductUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ProductUnch
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -689,6 +707,13 @@ export const EnumStateFilterSchema: z.ZodType<Prisma.EnumStateFilter> = z.object
   not: z.union([ z.lazy(() => StateSchema),z.lazy(() => NestedEnumStateFilterSchema) ]).optional(),
 }).strict();
 
+export const EnumBrandFilterSchema: z.ZodType<Prisma.EnumBrandFilter> = z.object({
+  equals: z.lazy(() => BrandSchema).optional(),
+  in: z.lazy(() => BrandSchema).array().optional(),
+  notIn: z.lazy(() => BrandSchema).array().optional(),
+  not: z.union([ z.lazy(() => BrandSchema),z.lazy(() => NestedEnumBrandFilterSchema) ]).optional(),
+}).strict();
+
 export const UserScalarRelationFilterSchema: z.ZodType<Prisma.UserScalarRelationFilter> = z.object({
   is: z.lazy(() => UserWhereInputSchema).optional(),
   isNot: z.lazy(() => UserWhereInputSchema).optional()
@@ -706,6 +731,7 @@ export const ProductCountOrderByAggregateInputSchema: z.ZodType<Prisma.ProductCo
   season: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
   state: z.lazy(() => SortOrderSchema).optional(),
+  brand: z.lazy(() => SortOrderSchema).optional(),
   photo: z.lazy(() => SortOrderSchema).optional(),
   photoKey: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
@@ -727,6 +753,7 @@ export const ProductMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ProductMaxO
   season: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
   state: z.lazy(() => SortOrderSchema).optional(),
+  brand: z.lazy(() => SortOrderSchema).optional(),
   photo: z.lazy(() => SortOrderSchema).optional(),
   photoKey: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
@@ -744,6 +771,7 @@ export const ProductMinOrderByAggregateInputSchema: z.ZodType<Prisma.ProductMinO
   season: z.lazy(() => SortOrderSchema).optional(),
   status: z.lazy(() => SortOrderSchema).optional(),
   state: z.lazy(() => SortOrderSchema).optional(),
+  brand: z.lazy(() => SortOrderSchema).optional(),
   photo: z.lazy(() => SortOrderSchema).optional(),
   photoKey: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
@@ -827,6 +855,16 @@ export const EnumStateWithAggregatesFilterSchema: z.ZodType<Prisma.EnumStateWith
   _count: z.lazy(() => NestedIntFilterSchema).optional(),
   _min: z.lazy(() => NestedEnumStateFilterSchema).optional(),
   _max: z.lazy(() => NestedEnumStateFilterSchema).optional()
+}).strict();
+
+export const EnumBrandWithAggregatesFilterSchema: z.ZodType<Prisma.EnumBrandWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => BrandSchema).optional(),
+  in: z.lazy(() => BrandSchema).array().optional(),
+  notIn: z.lazy(() => BrandSchema).array().optional(),
+  not: z.union([ z.lazy(() => BrandSchema),z.lazy(() => NestedEnumBrandWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumBrandFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumBrandFilterSchema).optional()
 }).strict();
 
 export const ProductCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.ProductCreateNestedManyWithoutUserInput> = z.object({
@@ -919,6 +957,10 @@ export const EnumStatusFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumSt
 
 export const EnumStateFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumStateFieldUpdateOperationsInput> = z.object({
   set: z.lazy(() => StateSchema).optional()
+}).strict();
+
+export const EnumBrandFieldUpdateOperationsInputSchema: z.ZodType<Prisma.EnumBrandFieldUpdateOperationsInput> = z.object({
+  set: z.lazy(() => BrandSchema).optional()
 }).strict();
 
 export const UserUpdateOneRequiredWithoutProductsNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutProductsNestedInput> = z.object({
@@ -1091,6 +1133,13 @@ export const NestedEnumStateFilterSchema: z.ZodType<Prisma.NestedEnumStateFilter
   not: z.union([ z.lazy(() => StateSchema),z.lazy(() => NestedEnumStateFilterSchema) ]).optional(),
 }).strict();
 
+export const NestedEnumBrandFilterSchema: z.ZodType<Prisma.NestedEnumBrandFilter> = z.object({
+  equals: z.lazy(() => BrandSchema).optional(),
+  in: z.lazy(() => BrandSchema).array().optional(),
+  notIn: z.lazy(() => BrandSchema).array().optional(),
+  not: z.union([ z.lazy(() => BrandSchema),z.lazy(() => NestedEnumBrandFilterSchema) ]).optional(),
+}).strict();
+
 export const NestedFloatWithAggregatesFilterSchema: z.ZodType<Prisma.NestedFloatWithAggregatesFilter> = z.object({
   equals: z.number().optional(),
   in: z.number().array().optional(),
@@ -1167,6 +1216,16 @@ export const NestedEnumStateWithAggregatesFilterSchema: z.ZodType<Prisma.NestedE
   _max: z.lazy(() => NestedEnumStateFilterSchema).optional()
 }).strict();
 
+export const NestedEnumBrandWithAggregatesFilterSchema: z.ZodType<Prisma.NestedEnumBrandWithAggregatesFilter> = z.object({
+  equals: z.lazy(() => BrandSchema).optional(),
+  in: z.lazy(() => BrandSchema).array().optional(),
+  notIn: z.lazy(() => BrandSchema).array().optional(),
+  not: z.union([ z.lazy(() => BrandSchema),z.lazy(() => NestedEnumBrandWithAggregatesFilterSchema) ]).optional(),
+  _count: z.lazy(() => NestedIntFilterSchema).optional(),
+  _min: z.lazy(() => NestedEnumBrandFilterSchema).optional(),
+  _max: z.lazy(() => NestedEnumBrandFilterSchema).optional()
+}).strict();
+
 export const ProductCreateWithoutUserInputSchema: z.ZodType<Prisma.ProductCreateWithoutUserInput> = z.object({
   id: z.string().cuid().optional(),
   name: z.string(),
@@ -1178,6 +1237,7 @@ export const ProductCreateWithoutUserInputSchema: z.ZodType<Prisma.ProductCreate
   season: z.lazy(() => SeasonSchema).optional(),
   status: z.lazy(() => StatusSchema).optional(),
   state: z.lazy(() => StateSchema).optional(),
+  brand: z.lazy(() => BrandSchema).optional(),
   photo: z.string(),
   photoKey: z.string(),
   createdAt: z.coerce.date().optional()
@@ -1194,6 +1254,7 @@ export const ProductUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.Prod
   season: z.lazy(() => SeasonSchema).optional(),
   status: z.lazy(() => StatusSchema).optional(),
   state: z.lazy(() => StateSchema).optional(),
+  brand: z.lazy(() => BrandSchema).optional(),
   photo: z.string(),
   photoKey: z.string(),
   createdAt: z.coerce.date().optional()
@@ -1240,6 +1301,7 @@ export const ProductScalarWhereInputSchema: z.ZodType<Prisma.ProductScalarWhereI
   season: z.union([ z.lazy(() => EnumSeasonFilterSchema),z.lazy(() => SeasonSchema) ]).optional(),
   status: z.union([ z.lazy(() => EnumStatusFilterSchema),z.lazy(() => StatusSchema) ]).optional(),
   state: z.union([ z.lazy(() => EnumStateFilterSchema),z.lazy(() => StateSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => EnumBrandFilterSchema),z.lazy(() => BrandSchema) ]).optional(),
   photo: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   photoKey: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -1300,6 +1362,7 @@ export const ProductCreateManyUserInputSchema: z.ZodType<Prisma.ProductCreateMan
   season: z.lazy(() => SeasonSchema).optional(),
   status: z.lazy(() => StatusSchema).optional(),
   state: z.lazy(() => StateSchema).optional(),
+  brand: z.lazy(() => BrandSchema).optional(),
   photo: z.string(),
   photoKey: z.string(),
   createdAt: z.coerce.date().optional()
@@ -1316,6 +1379,7 @@ export const ProductUpdateWithoutUserInputSchema: z.ZodType<Prisma.ProductUpdate
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1332,6 +1396,7 @@ export const ProductUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.Prod
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -1348,6 +1413,7 @@ export const ProductUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.
   season: z.union([ z.lazy(() => SeasonSchema),z.lazy(() => EnumSeasonFieldUpdateOperationsInputSchema) ]).optional(),
   status: z.union([ z.lazy(() => StatusSchema),z.lazy(() => EnumStatusFieldUpdateOperationsInputSchema) ]).optional(),
   state: z.union([ z.lazy(() => StateSchema),z.lazy(() => EnumStateFieldUpdateOperationsInputSchema) ]).optional(),
+  brand: z.union([ z.lazy(() => BrandSchema),z.lazy(() => EnumBrandFieldUpdateOperationsInputSchema) ]).optional(),
   photo: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   photoKey: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),

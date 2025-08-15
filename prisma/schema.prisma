@@ -76,6 +76,40 @@ enum State {
   donation // Don pur
 }
 
+enum Brand {
+  jacadi
+  petit_bateau
+  sergent_major
+  zara
+  hm
+  kiabi
+  no_name
+  bonpoint
+  tartine_et_chocolat
+  bonton
+  okaidi
+  dpam
+  tape_a_loeil
+  vertbaudet
+  catimini
+  ca
+  tex_carrefour
+  in_extenso_auchan
+  gemo
+  zeeman
+  primark
+  lidl
+  monoprix
+  la_redoute
+  orchestra
+  grain_de_ble
+  boutchou_monoprix
+  ikks
+  absorba
+  natalys
+  Empty
+}
+
 model User {
   id          String    @id @default(cuid())
   clerkUserId String    @unique
@@ -96,6 +130,7 @@ model Product {
   season      Season   @default(Empty)
   status      Status   @default(collected)
   state       State    @default(new)
+  brand       Brand    @default(Empty)
   photo       String // URL publique
   photoKey    String // chemin/clé dans le bucket
   createdAt   DateTime @default(now())

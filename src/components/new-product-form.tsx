@@ -6,8 +6,8 @@ import {newProductSchema} from "@/lib/validators/product";
 import {addProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
 import Camera from "./camera";
-import {categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels, statusLabels} from "@/lib/product";
-import {Category, Gender, Season, Size, Status, State} from "@prisma/client";
+import {categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels, statusLabels, brandLabels} from "@/lib/product";
+import {Category, Gender, Season, Size, Status, State, Brand} from "@prisma/client";
 
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
@@ -20,6 +20,7 @@ export default function NewProductForm() {
                 season: Season.Empty,
                 size: Size.Empty,
                 status: Status.collected,
+                brand: Brand.Empty,
                 state: State.good
             }
         });
@@ -75,6 +76,13 @@ export default function NewProductForm() {
                         {Object.entries(categoryLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
                     </select>
                     {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <select {...register("brand")} className={errors.brand ? "border-red-500" : ""}>
+                        {Object.entries(brandLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une marque)"}</option>))}
+                    </select>
+                    {errors.brand && <p className="text-red-500 text-sm">{errors.brand.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
