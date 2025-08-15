@@ -1,7 +1,7 @@
 import {z} from "zod";
-import {CategorySchema, GenderSchema, SeasonSchema, SizeSchema, StatusSchema} from "../../../prisma/generated/zod";
-import {mapCategory, mapGender, mapSeason, mapSize, mapStatus} from "../product";
-import {Season, Category, Gender, Size, Status} from "@prisma/client";
+import {CategorySchema, GenderSchema, SeasonSchema, SizeSchema, StatusSchema, StateSchema} from "../../../prisma/generated/zod";
+import {mapCategory, mapGender, mapSeason, mapSize, mapStatus, mapState} from "../product";
+import {Season, Category, Gender, Size, Status, State} from "@prisma/client";
 
 export const newProductSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
@@ -11,7 +11,8 @@ export const newProductSchema = z.object({
     category: z.enum(CategorySchema.options).default(Category.Empty),
     size: z.enum(SizeSchema.options).default(Size.Empty),
     season: z.enum(SeasonSchema.options).default(Season.Empty),
-    status: z.enum(StatusSchema.options).default(Status.Collected), // Valeur par défaut "collecté",
+    status: z.enum(StatusSchema.options).default(Status.collected),
+    state: z.enum(StateSchema.options).default(State.donation),
     photo: z.union([
         z.instanceof(File, {message: "Image requise"})
             .refine(file => !file || file.size !== 0 || file.size <= 5000000, {message: "Taille maximale dépassée"}),
@@ -31,4 +32,5 @@ export const createSchema = z.object({
     size: z.string().transform(mapSize),
     season: z.string().transform(mapSeason),
     status: z.string().transform(mapStatus),
+    state: z.string().transform(mapState),
 });

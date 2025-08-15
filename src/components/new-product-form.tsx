@@ -6,8 +6,8 @@ import {newProductSchema} from "@/lib/validators/product";
 import {addProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
 import Camera from "./camera";
-import {categoryLabels, genderLabels, seasonLabels, sizeLabels, statusLabels} from "@/lib/product";
-import {Category, Gender, Season, Size, Status} from "@prisma/client";
+import {categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels, statusLabels} from "@/lib/product";
+import {Category, Gender, Season, Size, Status, State} from "@prisma/client";
 
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
@@ -19,7 +19,8 @@ export default function NewProductForm() {
                 gender: Gender.Empty,
                 season: Season.Empty,
                 size: Size.Empty,
-                status: Status.collected
+                status: Status.collected,
+                state: State.good
             }
         });
 
@@ -70,6 +71,20 @@ export default function NewProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-1">
+                    <select {...register("category")} className={errors.category ? "border-red-500" : ""}>
+                        {Object.entries(categoryLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
+                    </select>
+                    {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <select {...register("state")} className={errors.state ? "border-red-500" : ""}>
+                        {Object.entries(stateLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
+                    </select>
+                    {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
+                </div>
+
+                <div className="flex flex-col gap-1">
                     <input type="number" step="0.01" placeholder="Price" {...register("price")}
                            className={errors.price ? "border-red-500" : ""}/>
                     {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
@@ -80,13 +95,6 @@ export default function NewProductForm() {
                         {Object.entries(genderLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez un genre)"}</option>))}
                     </select>
                     {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
-                </div>
-
-                <div className="flex flex-col gap-1">
-                    <select {...register("category")} className={errors.category ? "border-red-500" : ""}>
-                        {Object.entries(categoryLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
-                    </select>
-                    {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">

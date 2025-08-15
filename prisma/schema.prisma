@@ -68,6 +68,14 @@ enum Status {
   available // disponible
 }
 
+enum State {
+  new // Neuf
+  very_good // Très bon état
+  good // Bon état
+  fair // Usage correct
+  donation // Don pur
+}
+
 model User {
   id          String    @id @default(cuid())
   clerkUserId String    @unique
@@ -87,6 +95,7 @@ model Product {
   size        Size     @default(Empty)
   season      Season   @default(Empty)
   status      Status   @default(collected)
+  state       State    @default(new)
   photo       String // URL publique
   photoKey    String // chemin/clé dans le bucket
   createdAt   DateTime @default(now())
