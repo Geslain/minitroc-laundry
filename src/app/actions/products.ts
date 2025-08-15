@@ -32,10 +32,16 @@ export async function addProduct(formData: FormData) {
         category: String(formData.get("category") || ""),
         size: String(formData.get("size") || ""),
         season: String(formData.get("season") || ""),
+        brand: String(formData.get("brand") || ""),
+        status: String(formData.get("status") || ""),
+        state: String(formData.get("state") || ""),
     };
+
+    console.log(data);
 
     const parsed = createSchema.safeParse(data);
     if (!parsed.success) {
+        console.log(parsed.error);
         return { error: parsed.error.message };
     }
 

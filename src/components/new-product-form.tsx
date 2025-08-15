@@ -8,6 +8,7 @@ import {toast} from "react-toastify";
 import Camera from "./camera";
 import {categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels, statusLabels, brandLabels} from "@/lib/product";
 import {Category, Gender, Season, Size, Status, State, Brand} from "@prisma/client";
+import {calculatePrice} from "@/lib/price";
 
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
@@ -21,7 +22,8 @@ export default function NewProductForm() {
                 size: Size.Empty,
                 status: Status.collected,
                 brand: Brand.Empty,
-                state: State.good
+                state: State.good,
+                price: 0
             }
         });
 
@@ -57,6 +59,18 @@ export default function NewProductForm() {
         setValue("photo", new File([imageSrc], "temp"))
     }
 
+    function handleCategoryChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        setValue("price", calculatePrice(getValues("brand"), e.target.value, getValues("state")))
+    }
+
+    function handleBrandChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        setValue("price", calculatePrice(e.target.value, getValues("category"), getValues("state")))
+    }
+
+    function handleStateChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        setValue("price", calculatePrice(getValues("brand"), getValues("category"), e.target.value,))
+    }
+
     return (
         <div className={"grid grid-cols-2"}>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
@@ -72,21 +86,21 @@ export default function NewProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <select {...register("category")} className={errors.category ? "border-red-500" : ""}>
+                    <select {...register("category")} className={errors.category ? "border-red-500" : ""} onChange={handleCategoryChange}>
                         {Object.entries(categoryLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
                     </select>
                     {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <select {...register("brand")} className={errors.brand ? "border-red-500" : ""}>
+                    <select {...register("brand")} className={errors.brand ? "border-red-500" : ""} onChange={handleBrandChange}>
                         {Object.entries(brandLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une marque)"}</option>))}
                     </select>
                     {errors.brand && <p className="text-red-500 text-sm">{errors.brand.message}</p>}
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <select {...register("state")} className={errors.state ? "border-red-500" : ""}>
+                    <select {...register("state")} className={errors.state ? "border-red-500" : ""} onChange={handleStateChange}>
                         {Object.entries(stateLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une catégorie)"}</option>))}
                     </select>
                     {errors.state && <p className="text-red-500 text-sm">{errors.state.message}</p>}
@@ -94,7 +108,7 @@ export default function NewProductForm() {
 
                 <div className="flex flex-col gap-1">
                     <input type="number" step="0.01" placeholder="Price" {...register("price")}
-                           className={errors.price ? "border-red-500" : ""}/>
+                           className={errors.price ? "border-red-500" : "cursor-not-allowed"} disabled/>
                     {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
                 </div>
 
