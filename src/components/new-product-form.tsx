@@ -6,8 +6,8 @@ import {newProductSchema} from "@/lib/validators/product";
 import {addProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
 import Camera from "./camera";
-import {categoryLabels, genderLabels, seasonLabels} from "@/lib/product";
-import {Category, Gender, Season} from "@prisma/client";
+import {categoryLabels, genderLabels, seasonLabels, sizeLabels} from "@/lib/product";
+import {Category, Gender, Season, Size} from "@prisma/client";
 
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
@@ -18,6 +18,7 @@ export default function NewProductForm() {
                 category: Category.Empty,
                 gender: Gender.Empty,
                 season: Season.Empty,
+                size: Size.Empty
             }
         });
 
@@ -88,7 +89,9 @@ export default function NewProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <input placeholder="Size" {...register("size")} className={errors.size ? "border-red-500" : ""}/>
+                    <select {...register("size")} className={errors.size ? "border-red-500" : getValues("size") === Size.Empty ? "text-gray-400" : ""}>
+                        {Object.entries(sizeLabels).map(([key, value]) => (<option key={key} value={key} disabled={!value}>{value || "(Sélectionnez une taille)"}</option>))}
+                    </select>
                     {errors.size && <p className="text-red-500 text-sm">{errors.size.message}</p>}
                 </div>
 

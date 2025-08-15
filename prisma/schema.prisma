@@ -41,6 +41,23 @@ enum Category {
   Empty // représente ""
 }
 
+enum Size {
+  zero_months // 0 mois
+  one_month // 1 mois
+  three_months // 3 mois
+  six_months // 6 mois
+  nine_months // 9 mois
+  twelve_months // 12 mois
+  eighteen_months // 18 mois
+  twenty_four_months // 24 mois
+  two_years // 2 ans
+  three_years // 3 ans
+  four_years // 4 ans
+  five_years // 5 ans
+  six_years // 6 ans
+  Empty // représente ""
+}
+
 model User {
   id          String    @id @default(cuid())
   clerkUserId String    @unique
@@ -57,7 +74,7 @@ model Product {
   price       Float    @default(0)
   gender      Gender   @default(Empty)
   category    Category @default(Empty)
-  size        String
+  size        Size     @default(Empty)
   season      Season   @default(Empty)
   photo       String // URL publique
   photoKey    String // chemin/clé dans le bucket
