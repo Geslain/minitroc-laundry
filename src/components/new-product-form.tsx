@@ -15,7 +15,7 @@ import {
     stateLabels,
     statusLabels
 } from "@/lib/product";
-import {Brand, Category, Gender, Product, Season, Size, State, Status} from "@prisma/client";
+import {Brand, Category, Gender, Season, Size, State, Status} from "@prisma/client";
 import {calculatePrice} from "@/lib/price";
 import Button from "@/components/button";
 import VoiceDetection from "@/components/voice-detection";
@@ -38,6 +38,7 @@ export default function NewProductForm() {
                 price: 0
             }
         });
+
     const takePhotoButtonRef = useRef<HTMLButtonElement>(null)
 
     const onSubmit = async (values: FormValues) => {
@@ -87,6 +88,9 @@ export default function NewProductForm() {
     function handleVocalCommand(attribute: ProductFormAttributes, value?: string) {
         if(value) {
             setValue(attribute, value)
+            if(["category", "state", "brand"].includes(attribute)) {
+                setValue("price", calculatePrice(getValues("brand"), getValues("category"), getValues("state")))
+            }
         } else if(attribute === "photo") {
             takePhotoButtonRef.current?.click()
         }

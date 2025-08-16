@@ -32,8 +32,8 @@ export function mapBrand(input: string): Brand {
 
 export const genderLabels: Record<Gender, string> = {
     [Gender.Empty]: '',
-    [Gender.M]: 'Homme',
-    [Gender.F]: 'Femme',
+    [Gender.M]: 'Garçon',
+    [Gender.F]: 'Fille',
     [Gender.Unisex]: 'Mixte',
 };
 

@@ -3,21 +3,35 @@ import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition'
 import Button from "@/components/button";
 import {PlayIcon, RotateCcwIcon, SquareIcon} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
-import {brandLabels, sizeLabels} from "@/lib/product";
-import {Brand, Category} from "@prisma/client";
+import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels} from "@/lib/product";
+import {Brand, Category, Gender, Season, Size, State} from "@prisma/client";
 import {ProductFormAttributes} from "@/types/product";
 
 type Props = {
     onVocalCommandAction: (attribute: ProductFormAttributes, value?: string) => void;
 }
 
-const brandFuzzy = {
+const brandFuzziness = {
     [Brand.bonton]: 0.7,
     [Brand.bonpoint]: 0.7,
     [Brand.natalys]: 0.5,
     [Brand.boutchou_monoprix]: 0.8,
 };
 
+const categoryFuzziness = {
+    [Category.sweatshirt]: 0.7,
+}
+
+const altervativeSizeCommands = {
+    [Size.zero_months]: ["zéro mois"],
+    [Size.one_month]: ["un mois"],
+    [Size.three_months]: ["trois mois"],
+    [Size.six_months]: ["six mois"],
+    [Size.nine_months]: ["neuf mois"],
+    [Size.twelve_months]: ["douze mois"],
+    [Size.eighteen_months]: ["dix huit mois"],
+    [Size.twenty_four_months]: ["vingt quatre mois"]
+}
 export default function VoiceDetection({ onVocalCommandAction }: Readonly<Props>) {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -26,10 +40,49 @@ export default function VoiceDetection({ onVocalCommandAction }: Readonly<Props>
         callback: (command: string, spokenPhrase: string) => {
             if(command) onVocalCommandAction("brand", key)
         },
-        ...(key in brandFuzzy && {
-            fuzzyMatchingThreshold: brandFuzzy[key as keyof typeof brandFuzzy],
+        ...(key in brandFuzziness && {
+            fuzzyMatchingThreshold: brandFuzziness[key as keyof typeof brandFuzziness],
             isFuzzyMatch: true
         })
+    })), [onVocalCommandAction])
+
+    const sizeCommands = useMemo(() => Object.entries(sizeLabels).filter(([k]) => k !== Size.Empty).map(([key, value]) => ({
+        command: [value, ...(key in altervativeSizeCommands ? altervativeSizeCommands[key as keyof typeof altervativeSizeCommands] : [])],
+        callback: (command: string) => {
+            if(command) onVocalCommandAction("size", key)
+        }
+    })), [onVocalCommandAction])
+
+    const categoryCommands = useMemo(() => Object.entries(categoryLabels).filter(([k]) => k !== Category.Empty).map(([key, value]) => ({
+        command: value.split("/").map(s => s.trim()),
+        callback: (command: string) => {
+            if(command) onVocalCommandAction("category", key)
+        },
+        ...(key in categoryFuzziness && {
+            fuzzyMatchingThreshold: categoryFuzziness[key as keyof typeof categoryFuzziness],
+            isFuzzyMatch: true
+        })
+    })), [onVocalCommandAction])
+
+    const seasonCommands = useMemo(() => Object.entries(seasonLabels).filter(([k]) => k !== Season.Empty).map(([key, value]) => ({
+        command: value,
+        callback: (command: string) => {
+            if(command) onVocalCommandAction("season", key)
+        }
+    })), [onVocalCommandAction])
+
+    const genderCommands = useMemo(() => Object.entries(genderLabels).filter(([k]) => k !== Gender.Empty).map(([key, value]) => ({
+        command: value,
+        callback: (command: string) => {
+            if(command) onVocalCommandAction("gender", key)
+        }
+    })), [onVocalCommandAction])
+
+    const stateCommands = useMemo(() => Object.entries(stateLabels).map(([key, value]) => ({
+        command: value,
+        callback: (command: string) => {
+            if(command) onVocalCommandAction("state", key)
+        }
     })), [onVocalCommandAction])
 
     const commands = [
@@ -45,13 +98,12 @@ export default function VoiceDetection({ onVocalCommandAction }: Readonly<Props>
             command: 'taille *',
             callback: (size: string) => onVocalCommandAction("size", Object.entries(sizeLabels).find(([key, value]) => value.toLowerCase().includes(size))?.[0]),
         },
-        {
-            command: ['manches courtes', 'manche courte'],
-            callback: (category: string) => {
-                onVocalCommandAction("category", Category.tshirt_short)
-            },
-        },
         ...brandCommands,
+        ...sizeCommands,
+        ...categoryCommands,
+        ...seasonCommands,
+        ...genderCommands,
+        ...stateCommands,
         {
             command: ['capture photo', 'prendre photo', 'capture', 'photo'],
             callback: () => {
