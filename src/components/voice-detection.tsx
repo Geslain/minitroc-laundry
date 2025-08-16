@@ -34,6 +34,8 @@ const altervativeSizeCommands = {
 }
 export default function VoiceDetection({ onVocalCommandAction }: Readonly<Props>) {
     const [isMounted, setIsMounted] = useState(false);
+    const [prompt, setPrompt] = useState("")
+    const [command, setCommand] = useState("")
 
     const brandCommands = useMemo(() => Object.entries(brandLabels).filter(([k]) => k !== Brand.Empty).map(([key, value]) => ({
         command: value.toLowerCase().replace(/\(.*\)]/g, "").replace(/œ/g, "oe"),
@@ -112,12 +114,31 @@ export default function VoiceDetection({ onVocalCommandAction }: Readonly<Props>
         }
     ]
 
+    function resetPrompt() {
+        setPrompt("")
+        setCommand("")
+    }
+
     const {
-        transcript,
         listening,
-        resetTranscript,
+        interimTranscript,
+        finalTranscript,
         browserSupportsSpeechRecognition
     } = useSpeechRecognition({commands})
+
+    useEffect(() => {
+        if(interimTranscript) {
+            setCommand(interimTranscript)
+        }
+    }, [interimTranscript]);
+
+    console.log(prompt)
+    useEffect(() => {
+        if(command) {
+            setPrompt(prompt+command+"\n")
+            setCommand("")
+        }
+    }, [finalTranscript]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -134,12 +155,10 @@ export default function VoiceDetection({ onVocalCommandAction }: Readonly<Props>
     return (
         <div>
             <p>Microphone: {listening ? 'on' : 'off'}</p>
-            <Button onClick={() => SpeechRecognition.startListening({ continuous: true })} icon={PlayIcon}
-                    label={"Démarrer la reconnaissance vocale"}></Button>
-            <Button onClick={SpeechRecognition.stopListening} variant={"danger"} icon={SquareIcon}
-                    label={"Stopper"}>Stop</Button>
-            <Button onClick={resetTranscript} icon={RotateCcwIcon} label={"Reset"}></Button>
-            <p>{transcript}</p>
+            <Button onClick={() => listening? SpeechRecognition.stopListening() : SpeechRecognition.startListening({ continuous: true })} icon={listening ? SquareIcon : PlayIcon}
+                    label={`${listening ? "Stopper" : "Démarrer"} la reconnaissance vocale`}  variant={listening ? "danger": "primary"}></Button>
+            <Button onClick={resetPrompt} icon={RotateCcwIcon} label={"Reset"}></Button>
+            <p className={"whitespace-pre-wrap"}>{prompt}</p>
         </div>
     )
 }
