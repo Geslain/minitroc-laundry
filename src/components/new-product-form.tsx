@@ -15,9 +15,12 @@ import {
     stateLabels,
     statusLabels
 } from "@/lib/product";
-import {Brand, Category, Gender, Season, Size, State, Status} from "@prisma/client";
+import {Brand, Category, Gender, Product, Season, Size, State, Status} from "@prisma/client";
 import {calculatePrice} from "@/lib/price";
 import Button from "@/components/button";
+import VoiceDetection from "@/components/voice-detection";
+import {useRef} from "react";
+import {ProductFormAttributes} from "@/types/product";
 
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
@@ -35,6 +38,7 @@ export default function NewProductForm() {
                 price: 0
             }
         });
+    const takePhotoButtonRef = useRef<HTMLButtonElement>(null)
 
     const onSubmit = async (values: FormValues) => {
         const fd = new FormData();
@@ -80,8 +84,19 @@ export default function NewProductForm() {
         setValue("price", calculatePrice(getValues("brand"), getValues("category"), e.target.value as State))
     }
 
+    function handleVocalCommand(attribute: ProductFormAttributes, value?: string) {
+        if(value) {
+            setValue(attribute, value)
+        } else if(attribute === "photo") {
+            takePhotoButtonRef.current?.click()
+        }
+    }
+
     return (
-        <div className={"grid grid-cols-2"}>
+        <div className={"grid grid-cols-3"}>
+            <div>
+                <VoiceDetection onVocalCommandAction={handleVocalCommand}/>
+            </div>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
                 <div className="flex flex-col gap-1">
                     <input placeholder="Name" {...register("name")} className={errors.name ? "border-red-500" : ""}/>
@@ -187,7 +202,7 @@ export default function NewProductForm() {
                 />
             </form>
             <div>
-                <Camera onCapture={handleCapture}/>
+                <Camera onCapture={handleCapture} ref={takePhotoButtonRef}/>
             </div>
         </div>
     );

@@ -1,4 +1,4 @@
-import {ButtonHTMLAttributes, createElement, DetailedHTMLProps} from "react"
+import {ButtonHTMLAttributes, createElement, DetailedHTMLProps, ForwardedRef, forwardRef} from "react"
 import {LucideIcon} from "lucide-react";
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
     variant?: "primary" | "danger"
 } & DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
 
-export default function Button({icon, label, variant = "primary", className, ...rest}: Props) {
+const Button = forwardRef(({icon, label, variant = "primary", className, ...rest}: Props, ref: ForwardedRef<HTMLButtonElement>) => {
     const classes = (() => {
         switch (variant) {
             case "primary":
@@ -16,8 +16,10 @@ export default function Button({icon, label, variant = "primary", className, ...
                 return "bg-red-500 hover:bg-red-600 text-white"
         }
     })()
-    return <button {...rest} className={`flex justify-center gap-2 p-3 rounded-lg items-center transition-colors ${classes} ${className} `}>
+    return <button ref={ref} {...rest} className={`flex justify-center gap-2 p-3 rounded-lg items-center transition-colors ${classes} ${className} `}>
         {icon && createElement(icon, {className: "w-4 h-4", "aria-hidden": "true"})}
         {label}
     </button>
-}
+})
+
+export default Button

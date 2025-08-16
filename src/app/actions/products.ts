@@ -37,8 +37,6 @@ export async function addProduct(formData: FormData) {
         state: String(formData.get("state") || ""),
     };
 
-    console.log(data);
-
     const parsed = createSchema.safeParse(data);
     if (!parsed.success) {
         console.log(parsed.error);
