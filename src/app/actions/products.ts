@@ -32,7 +32,7 @@ export async function addProduct(formData: FormData) {
         return {error: "Missing photo"};
     }
 
-    // champs textuels
+    // text fields
     const data = {
         name: String(formData.getAll("name") || ""),
         description: String(formData.get("description") || ""),
@@ -111,13 +111,13 @@ export async function deleteAllProducts() {
         const user = await getCurrentUser();
         const supabase = supabaseServer();
 
-        // Récupérer tous les produits avec leurs photoKeys
+        // Get all products with their photoKeys
         const products = await prisma.product.findMany({
             where: { userId: user.id },
             select: { photoKey: true }
         });
 
-        // Supprimer les images du stockage
+        // Delete images from storage
         if (products.length > 0) {
             const photoKeys = products.map(p => p.photoKey).filter(Boolean);
 
@@ -136,7 +136,7 @@ export async function deleteAllProducts() {
             }
         }
 
-        // Supprimer tous les produits de l'utilisateur
+        // Delete all user's products
         const result = await prisma.product.deleteMany({
             where: { userId: user.id }
         });
@@ -181,7 +181,7 @@ export async function exportProductsToCSV() {
             }
         });
 
-        // En-têtes CSV
+        // CSV headers
         const headers = [
             'nom',
             'description',
@@ -196,7 +196,7 @@ export async function exportProductsToCSV() {
             'etat'
         ];
 
-        // Conversion des données
+        // Data conversion
         const csvData = products.map(product => [
             `"${(product.name || '').replace(/"/g, '""')}"`,
             `"${(product.description || '').replace(/"/g, '""')}"`,
@@ -211,13 +211,13 @@ export async function exportProductsToCSV() {
             `"${stateLabels[product.state] || product.state}"`
         ]);
 
-        // Construction du CSV
+        // CSV construction
         const csvContent = [
             headers.join(','),
             ...csvData.map(row => row.join(','))
         ].join('\n');
 
-        // Ajout du BOM pour la compatibilité Excel avec les caractères UTF-8
+        // Add BOM for Excel compatibility with UTF-8 characters
         const csvWithBOM = '\uFEFF' + csvContent;
 
         return {

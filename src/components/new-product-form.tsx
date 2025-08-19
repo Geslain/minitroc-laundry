@@ -50,9 +50,9 @@ export default function NewProductForm() {
             if (k === "photo" && v instanceof File) {
                 fd.append("photo", v);
             } else if (k === "gender" && v === "") {
-                fd.append(k, "Empty"); // Convertit les valeurs vides en Empty pour l'enum Gender
+                fd.append(k, "Empty"); // Converts empty values to Empty for Gender enum
             } else if (k === "season" && v === "") {
-                fd.append(k, "Empty"); // Convertit les valeurs vides en Empty pour l'enum Season
+                fd.append(k, "Empty"); // Converts empty values to Empty for Season enum
             } else {
                 fd.append(k, String(v ?? ""));
             }
