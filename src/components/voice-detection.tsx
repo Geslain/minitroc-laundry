@@ -144,7 +144,7 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef}: 
             setPrompts([...prompts, {text: currentTranscript, date: new Date()}])
             setCurrentTranscript("")
         }
-    }, [finalTranscript, setPrompts, currentTranscript, prompts]);
+    }, [finalTranscript]);
 
     useEffect(() => {
         setIsMounted(true);
