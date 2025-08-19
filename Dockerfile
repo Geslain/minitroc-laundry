@@ -1,15 +1,35 @@
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy application files
+# Copy package files and prisma schema first
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies including @prisma/client
+RUN npm install
+
+# Copy the rest of the application files
 COPY . .
 
-# Install dependencies
-RUN npm ci
-
-# Generate Prisma client
+# Generate Prisma client to ensure it's available
 RUN npx prisma generate
+
+# Arguments for build-time environment variables
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG CLERK_SECRET_KEY
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG SUPABASE_SERVICE_ROLE_KEY
+
+# Set environment variables for build
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
+ENV DATABASE_URL=$DATABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
 
 # Build the application
 RUN npm run build

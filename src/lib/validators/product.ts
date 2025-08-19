@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {CategorySchema, GenderSchema, SeasonSchema, SizeSchema, StatusSchema, StateSchema, BrandSchema} from "../../../prisma/generated/zod";
+import {CategorySchema, GenderSchema, SeasonSchema, SizeSchema, StatusSchema, StateSchema, BrandSchema} from "@/generated/zod";
 import {mapCategory, mapGender, mapSeason, mapSize, mapStatus, mapState, mapBrand} from "../product";
 import {Season, Category, Gender, Size, Status, State, Brand} from "@prisma/client";
 

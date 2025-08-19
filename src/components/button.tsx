@@ -25,4 +25,6 @@ const Button = forwardRef(({children, icon, label, variant = "primary", classNam
     </button>
 })
 
+Button.displayName = "Button"
+
 export default Button

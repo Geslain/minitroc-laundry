@@ -2,6 +2,7 @@ import Webcam from "react-webcam";
 import {ForwardedRef, useCallback, useRef, useState} from "react";
 import {CameraIcon, TrashIcon} from "lucide-react";
 import Button from "@/components/button";
+import Image from "next/image";
 
 type CameraProps = {
     onCapture: (imageSrc: Blob | undefined) => void;
@@ -39,7 +40,7 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
                 width={1280}
                 className={"rounded-md"}
             />
-            {photo && <img src={URL.createObjectURL(photo)} alt="webcam screen" className={"rounded-md absolute top-0 left-0"}/>}
+            {photo && <Image src={URL.createObjectURL(photo)} alt="webcam screen" className={"rounded-md absolute top-0 left-0"}/>}
         </div>
         <div className={"mt-2 flex gap-2"}>
             <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoRef}/>
