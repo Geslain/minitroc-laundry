@@ -59,6 +59,29 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+### Docker Deployment
+
+1. Copy the environment variables example file:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit the `.env` file with your own credentials and API keys
+
+3. Build and start the containers:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. Run migrations (first time only):
+   ```bash
+   docker-compose exec app npx prisma migrate deploy
+   ```
+
+5. Access the application at [http://localhost:3000](http://localhost:3000)
+
+For detailed deployment instructions and environment configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
+
 ## 🏗️ Technologies
 
 - **Frontend**: React 19, NextJS 15, Tailwind CSS
