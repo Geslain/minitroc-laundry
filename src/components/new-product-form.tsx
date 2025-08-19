@@ -39,7 +39,10 @@ export default function NewProductForm() {
             }
         });
 
-    const takePhotoButtonRef = useRef<HTMLButtonElement>(null)
+    const takePhotoRef = useRef<HTMLButtonElement>(null)
+    const submitButtonRef = useRef<HTMLButtonElement>(null)
+    const clearPhotoRef = useRef<HTMLButtonElement>(null)
+    const clearPromptsRef = useRef<HTMLButtonElement>(null)
 
     const onSubmit = async (values: FormValues) => {
         const fd = new FormData();
@@ -85,23 +88,25 @@ export default function NewProductForm() {
         setValue("price", calculatePrice(getValues("brand"), getValues("category"), e.target.value as State))
     }
 
-    function handleVocalCommand(attribute: ProductFormAttributes, value?: string) {
-        if(value) {
+    function handleVocalCommand(attribute: ProductFormAttributes | "submit", value?: string) {
+        if(attribute === "submit") {
+            submitButtonRef.current?.click()
+            clearPhotoRef.current?.click()
+            clearPromptsRef.current?.click()
+        } else if(value) {
             setValue(attribute, value)
             if(["category", "state", "brand"].includes(attribute)) {
                 setValue("price", calculatePrice(getValues("brand"), getValues("category"), getValues("state")))
             }
         } else if(attribute === "photo") {
-            takePhotoButtonRef.current?.click()
+            takePhotoRef.current?.click()
         }
     }
 
     return (
-        <div className={"grid grid-cols-3"}>
-            <div>
-                <VoiceDetection onVocalCommandAction={handleVocalCommand}/>
-            </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
+        <div className={"grid grid-cols-3 gap-4 p-4"}>
+            <VoiceDetection onVocalCommandAction={handleVocalCommand} clearPromptsRef={clearPromptsRef}/>
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                     <input placeholder="Name" {...register("name")} className={errors.name ? "border-red-500" : ""}/>
                     {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
@@ -203,10 +208,11 @@ export default function NewProductForm() {
                     type="submit"
                     label={isSubmitting ? "Création en cours..." : "Créer"}
                     disabled={isSubmitting}
+                    ref={submitButtonRef}
                 />
             </form>
             <div>
-                <Camera onCapture={handleCapture} ref={takePhotoButtonRef}/>
+                <Camera onCapture={handleCapture} takePhotoRef={takePhotoRef} clearPhotoRef={clearPhotoRef}/>
             </div>
         </div>
     );

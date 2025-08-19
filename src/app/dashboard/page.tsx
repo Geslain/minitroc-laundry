@@ -1,5 +1,5 @@
-import {SignOutButton} from "@/components/sign-out-button";
+import {redirect} from "next/navigation";
 
 export default function DashboardPage() {
-    return <div>Dashboard<SignOutButton/></div>
+    redirect('/dashboard/products');
 }

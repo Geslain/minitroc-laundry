@@ -1,13 +1,15 @@
 import Webcam from "react-webcam";
-import {ForwardedRef, forwardRef, useCallback, useRef, useState} from "react";
+import {ForwardedRef, useCallback, useRef, useState} from "react";
 import {CameraIcon, TrashIcon} from "lucide-react";
 import Button from "@/components/button";
 
 type CameraProps = {
     onCapture: (imageSrc: Blob | undefined) => void;
+    takePhotoRef: ForwardedRef<HTMLButtonElement>;
+    clearPhotoRef: ForwardedRef<HTMLButtonElement>;
 }
 
-const Camera = forwardRef(({onCapture}: Readonly<CameraProps>, takePhotoButtonRef: ForwardedRef<HTMLButtonElement>) => {
+const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>) => {
     const [photo, setPhoto] = useState<Blob | undefined>()
     const webcamRef = useRef<Webcam>(null);
     const handleCapture = useCallback(
@@ -35,14 +37,15 @@ const Camera = forwardRef(({onCapture}: Readonly<CameraProps>, takePhotoButtonRe
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
                 width={1280}
+                className={"rounded-md"}
             />
-            {photo && <img src={URL.createObjectURL(photo)} alt="webcam screen" className={"absolute top-0 left-0"}/>}
+            {photo && <img src={URL.createObjectURL(photo)} alt="webcam screen" className={"rounded-md absolute top-0 left-0"}/>}
         </div>
         <div className={"mt-2 flex gap-2"}>
-            <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoButtonRef}/>
-            <Button onClick={handleDelete} icon={TrashIcon} variant={"danger"} label={"Supprimer photo"}/>
+            <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoRef}/>
+            <Button onClick={handleDelete} icon={TrashIcon} variant={"danger"} ref={clearPhotoRef} label={"Supprimer photo"}/>
         </div>
     </div>
-})
+}
 
 export default Camera;

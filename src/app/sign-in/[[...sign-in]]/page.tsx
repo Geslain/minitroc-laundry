@@ -5,7 +5,7 @@ export default function Page() {
     return (
         <main className="min-h-screen grid place-items-center p-6">
             <SignIn
-                appearance={{ variables: { colorPrimary: "#111" } }}
+                appearance={{ variables: { colorPrimary: "#111" }, layout:{ logoImageUrl: "/logo.png" }}}
                 fallbackRedirectUrl="/dashboard"
                 signUpFallbackRedirectUrl="/dashboard"
             />
