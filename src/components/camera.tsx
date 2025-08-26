@@ -40,7 +40,7 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
                 width={1280}
                 className={"rounded-md"}
             />
-            {photo && <Image src={URL.createObjectURL(photo)} alt="webcam screen" className={"rounded-md absolute top-0 left-0"}/>}
+            {photo && <Image src={URL.createObjectURL(photo)} alt="webcam screen" width={1280} height={720} className={"rounded-md absolute top-0 left-0"}/>}
         </div>
         <div className={"mt-2 flex gap-2"}>
             <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoRef}/>

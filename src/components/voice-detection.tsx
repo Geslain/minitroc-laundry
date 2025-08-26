@@ -16,7 +16,10 @@ const brandFuzziness = {
     [Brand.bonton]: 0.7,
     [Brand.bonpoint]: 0.7,
     [Brand.natalys]: 0.5,
-    [Brand.boutchou_monoprix]: 0.8,
+    [Brand.boutchou_monoprix]: 0.6,
+    [Brand.tex_carrefour]: 0.6,
+    [Brand.shein]: 0.5,
+    [Brand.benetton]: 0.4,
 };
 
 const categoryFuzziness = {

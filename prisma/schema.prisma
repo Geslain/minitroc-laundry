@@ -39,6 +39,7 @@ enum Category {
   sweatshirt // Sweat
   pants // Pantalon/Bas
   bodysuit // Bodies
+  sleeping_bag // Turbulette
   Empty // représente ""
 }
 
@@ -108,6 +109,10 @@ enum Brand {
   ikks
   absorba
   natalys
+  bebel
+  shein
+  uniqlo
+  benetton
   Empty
 }
 

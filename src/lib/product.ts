@@ -58,6 +58,7 @@ export const categoryLabels: Record<Category, string> = {
     [Category.sweatshirt]: 'Sweat',
     [Category.pants]: 'Pantalon/Bas',
     [Category.bodysuit]: 'Bodies',
+    [Category.sleeping_bag]: 'Turbulette',
 };
 
 export const sizeLabels: Record<Size, string> = {
@@ -88,7 +89,7 @@ export const statusLabels: Record<Status, string> = {
 };
 
 export const stateLabels: Record<State, string> = {
-    [State.new]: "Neuf",
+    [State.new]: "Comme neuf",
     [State.very_good]: "Très bon état",
     [State.good]: "Bon état",
     [State.fair]: "Usage correct",
@@ -126,5 +127,9 @@ export const brandLabels: Record<Brand, string> = {
     [Brand.ikks]: "IKKS",
     [Brand.absorba]: "Absorba",
     [Brand.natalys]: "Natalys",
+    [Brand.bebel]: "Bebel",
+    [Brand.shein]: "Chine (Shein)",
+    [Brand.uniqlo]: "Uniqlo",
+    [Brand.benetton]: "United colours of Benetton",
     [Brand.Empty]: ""
 };

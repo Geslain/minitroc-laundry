@@ -31,6 +31,10 @@ export const brandValues: Record<Brand, number> = {
     [Brand.ikks]: 2,
     [Brand.absorba]: 2,
     [Brand.natalys]: 3,
+    [Brand.bebel]: 3,
+    [Brand.shein]: 1,
+    [Brand.uniqlo]: 3,
+    [Brand.benetton]: 3,
     [Brand.Empty]: 0
 };
 
@@ -47,6 +51,7 @@ export const categoryValues: Record<Category, number> = {
     [Category.sweatshirt]: 5,
     [Category.pants]: 4,
     [Category.bodysuit]: 3,
+    [Category.sleeping_bag]: 4,
     [Category.Empty]: 0
 };
 
