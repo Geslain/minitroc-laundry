@@ -119,7 +119,6 @@ export const brandLabels: Record<Brand, string> = {
     [Brand.zeeman]: "Zeeman",
     [Brand.primark]: "Primark",
     [Brand.lidl]: "Lidl",
-    [Brand.monoprix]: "Monoprix",
     [Brand.la_redoute]: "La Redoute",
     [Brand.orchestra]: "Orchestra",
     [Brand.grain_de_ble]: "Grain de Blé",

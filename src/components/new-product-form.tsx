@@ -22,21 +22,23 @@ import VoiceDetection from "@/components/voice-detection";
 import {useRef} from "react";
 import {ProductFormAttributes} from "@/types/product";
 
+const defaultValues = {
+    category: Category.Empty,
+        gender: Gender.Empty,
+        season: Season.Empty,
+        size: Size.Empty,
+        status: Status.collected,
+        brand: Brand.Empty,
+        state: State.good,
+        price: 0
+}
+
 type FormValues = z.input<typeof newProductSchema>;
 export default function NewProductForm() {
     const {control, register, handleSubmit, formState: {errors, isSubmitting}, reset, setValue, getValues} =
         useForm<FormValues>({
             resolver: zodResolver(newProductSchema),
-            defaultValues: {
-                category: Category.Empty,
-                gender: Gender.Empty,
-                season: Season.Empty,
-                size: Size.Empty,
-                status: Status.collected,
-                brand: Brand.Empty,
-                state: State.good,
-                price: 0
-            }
+            defaultValues
         });
 
     const takePhotoRef = useRef<HTMLButtonElement>(null)
@@ -64,7 +66,11 @@ export default function NewProductForm() {
                 toast(`Erreur: ${response.error || 'Une erreur est survenue'}`, {type: "error"});
                 return;
             }
-            reset();
+            reset({
+                ...defaultValues,
+                size: getValues("size"),
+                category: getValues("category")
+            });
             toast("Produit créé ✅", {type: "success"});
         } catch (error) {
             console.error("Erreur lors de la soumission:", error);

@@ -23,7 +23,6 @@ export const brandValues: Record<Brand, number> = {
     [Brand.zeeman]: 0,
     [Brand.primark]: 0,
     [Brand.lidl]: 0,
-    [Brand.monoprix]: 2,
     [Brand.la_redoute]: 2,
     [Brand.orchestra]: 1,
     [Brand.grain_de_ble]: 1,

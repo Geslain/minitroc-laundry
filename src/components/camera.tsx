@@ -1,6 +1,6 @@
 import Webcam from "react-webcam";
 import {ForwardedRef, useCallback, useRef, useState} from "react";
-import {CameraIcon, TrashIcon} from "lucide-react";
+import {CameraIcon, TrashIcon, CircleCheckBig} from "lucide-react";
 import Button from "@/components/button";
 import Image from "next/image";
 
@@ -40,7 +40,12 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
                 width={1280}
                 className={"rounded-md"}
             />
-            {photo && <Image src={URL.createObjectURL(photo)} alt="webcam screen" width={1280} height={720} className={"rounded-md absolute top-0 left-0"}/>}
+            {photo &&
+                <div>
+                    <Image src={URL.createObjectURL(photo)} alt="webcam screen" width={1280} height={720} className={"rounded-md absolute top-0 left-0"}/>
+                    <CircleCheckBig className={"absolute bottom-0 right-0 mr-4 mb-4 text-green-500 w-12 h-12"}/>
+                </div>
+            }
         </div>
         <div className={"mt-2 flex gap-2"}>
             <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoRef}/>
