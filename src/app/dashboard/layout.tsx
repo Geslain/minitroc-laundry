@@ -20,7 +20,7 @@ export default function DashboardLayout({children}: Readonly<{
             </div>
             <SignOutButton/>
         </header>
-        <main className={"overflow-y-auto"}>
+        <main className={"overflow-y-auto h-full"}>
             {children}
         </main>
     </div>

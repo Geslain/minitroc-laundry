@@ -12,16 +12,16 @@ const Button = forwardRef(({children, icon, label, variant = "primary", classNam
     const classes = (() => {
         switch (variant) {
             case "none":
-                return ""
+                return "hover:bg-gray-100"
             case "primary":
                 return "bg-blue-700 hover:bg-blue-800 text-white"
             case "danger":
                 return "bg-red-700 hover:bg-red-800 text-white"
         }
     })()
-    return <button ref={ref} {...rest} className={`flex shadow justify-center gap-2 p-3 rounded-lg items-center transition-colors ${classes} ${className} `}>
+    return <button ref={ref} {...rest} className={`flex cursor-pointer shadow justify-center gap-2 p-3 rounded-lg items-center transition-colors ${classes} ${className} `}>
         {icon && createElement(icon, {className: "w-4 h-4", "aria-hidden": "true"})}
-        {label ? label : children}
+        {label ?? children}
     </button>
 })
 
