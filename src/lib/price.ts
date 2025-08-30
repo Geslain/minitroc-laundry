@@ -34,7 +34,6 @@ export const brandValues: Record<Brand, number> = {
     [Brand.shein]: 1,
     [Brand.uniqlo]: 3,
     [Brand.benetton]: 3,
-    [Brand.Empty]: 0
 };
 
 export const categoryValues: Record<Category, number> = {
@@ -51,7 +50,6 @@ export const categoryValues: Record<Category, number> = {
     [Category.pants]: 4,
     [Category.bodysuit]: 3,
     [Category.sleeping_bag]: 4,
-    [Category.Empty]: 0
 };
 
 export const stateValues: Record<State, number> = {

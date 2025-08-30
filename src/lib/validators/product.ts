@@ -1,19 +1,19 @@
 import {z} from "zod";
 import {CategorySchema, GenderSchema, SeasonSchema, SizeSchema, StatusSchema, StateSchema, BrandSchema} from "@/generated/zod";
 import {mapCategory, mapGender, mapSeason, mapSize, mapStatus, mapState, mapBrand} from "../product";
-import {Season, Category, Gender, Size, Status, State, Brand} from "@prisma/client";
+import { Status, State } from "@prisma/client";
 
 export const newProductSchema = z.object({
     name: z.string().min(1, "Le nom est requis"),
     description: z.string().optional(),
     price: z.coerce.number().min(0, "Le prix doit être positif"),
-    gender: z.enum(GenderSchema.options).default(Gender.Empty),
-    category: z.enum(CategorySchema.options).default(Category.Empty),
-    size: z.enum(SizeSchema.options).default(Size.Empty),
-    season: z.enum(SeasonSchema.options).default(Season.Empty),
+    gender: z.enum(GenderSchema.options),
+    category: z.enum(CategorySchema.options),
+    size: z.enum(SizeSchema.options),
+    season: z.enum(SeasonSchema.options),
     status: z.enum(StatusSchema.options).default(Status.collected),
     state: z.enum(StateSchema.options).default(State.donation),
-    brand: z.enum(BrandSchema.options).default(Brand.Empty),
+    brand: z.enum(BrandSchema.options),
     photo: z.union([
         z.instanceof(File, {message: "Image requise"})
             .refine(file => !file || file.size !== 0 || file.size <= 5000000, {message: "Taille maximale dépassée"}),

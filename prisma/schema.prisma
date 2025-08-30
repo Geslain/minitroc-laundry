@@ -16,14 +16,12 @@ enum Gender {
   M
   F
   Unisex
-  Empty // représente ""
 }
 
 enum Season {
   mid_season // Mi-saison
   hot // Chaud
   cold // Froid
-  Empty // représente ""
 }
 
 enum Category {
@@ -40,7 +38,6 @@ enum Category {
   pants // Pantalon/Bas
   bodysuit // Bodies
   sleeping_bag // Turbulette
-  Empty // représente ""
 }
 
 enum Size {
@@ -57,7 +54,6 @@ enum Size {
   four_years // 4 ans
   five_years // 5 ans
   six_years // 6 ans
-  Empty // représente ""
 }
 
 enum Status {
@@ -112,7 +108,6 @@ enum Brand {
   shein
   uniqlo
   benetton
-  Empty
 }
 
 model User {
@@ -129,13 +124,13 @@ model Product {
   name        String
   description String?
   price       Float    @default(0)
-  gender      Gender   @default(Empty)
-  category    Category @default(Empty)
-  size        Size     @default(Empty)
-  season      Season   @default(Empty)
+  gender      Gender
+  category    Category
+  size        Size
+  season      Season
   status      Status   @default(collected)
   state       State    @default(new)
-  brand       Brand    @default(Empty)
+  brand       Brand
   photo       String // URL publique
   photoKey    String // chemin/clé dans le bucket
   createdAt   DateTime @default(now())

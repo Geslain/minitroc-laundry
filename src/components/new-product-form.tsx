@@ -15,7 +15,7 @@ import {
     stateLabels,
     statusLabels
 } from "@/lib/product";
-import {Brand, Category, Gender, Season, Size, State, Status} from "@prisma/client";
+import {Brand, Category, State, Status} from "@prisma/client";
 import {calculatePrice} from "@/lib/price";
 import Button from "@/components/button";
 import VoiceDetection from "@/components/voice-detection";
@@ -23,12 +23,12 @@ import {useRef} from "react";
 import {ProductFormAttributes} from "@/types/product";
 
 const defaultValues = {
-    category: Category.Empty,
-        gender: Gender.Empty,
-        season: Season.Empty,
-        size: Size.Empty,
+    category: undefined,
+        gender: undefined,
+        season: undefined,
+        size: undefined,
         status: Status.collected,
-        brand: Brand.Empty,
+        brand: undefined,
         state: State.good,
         price: 0
 }
@@ -51,10 +51,6 @@ export default function NewProductForm() {
         Object.entries(values).forEach(([k, v]) => {
             if (k === "photo" && v instanceof File) {
                 fd.append("photo", v);
-            } else if (k === "gender" && v === "") {
-                fd.append(k, "Empty"); // Converts empty values to Empty for Gender enum
-            } else if (k === "season" && v === "") {
-                fd.append(k, "Empty"); // Converts empty values to Empty for Season enum
             } else {
                 fd.append(k, String(v ?? ""));
             }

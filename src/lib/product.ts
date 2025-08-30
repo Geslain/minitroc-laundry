@@ -2,19 +2,27 @@ import {Category, Gender, Season, Size, Status, State, Brand} from "@prisma/clie
 
 // Fonctions de validation simples
 export function mapGender(input: string): Gender {
-    return Object.values(Gender).includes(input as Gender) ? input as Gender : Gender.Empty;
+    if(Object.values(Gender).includes(input as Gender))
+        return input as Gender
+    throw new Error("Gender not found");
 }
 
 export function mapSeason(input: string): Season {
-    return Object.values(Season).includes(input as Season) ? input as Season : Season.Empty;
+    if(Object.values(Season).includes(input as Season))
+        return input as Season
+    throw new Error("Season not found");
 }
 
 export function mapCategory(input: string): Category {
-    return Object.values(Category).includes(input as Category) ? input as Category : Category.Empty;
+    if(Object.values(Category).includes(input as Category))
+        return input as Category
+    throw new Error('Category not found')
 }
 
 export function mapSize(input: string): Size {
-    return Object.values(Size).includes(input as Size) ? input as Size : Size.Empty;
+    if(Object.values(Size).includes(input as Size))
+        return input as Size
+    throw new Error('Size not found')
 }
 
 export function mapStatus(input: string): Status {
@@ -26,26 +34,25 @@ export function mapState(input: string): State {
 }
 
 export function mapBrand(input: string): Brand {
-    return Object.values(Brand).includes(input as Brand) ? input as Brand : Brand.Empty;
+    if(Object.values(Brand).includes(input as Brand))
+        return input as Brand;
+    throw new Error('Brand not found')
 }
 
 
 export const genderLabels: Record<Gender, string> = {
-    [Gender.Empty]: '',
     [Gender.M]: 'Garçon',
     [Gender.F]: 'Fille',
     [Gender.Unisex]: 'Mixte',
 };
 
 export const seasonLabels: Record<Season, string> = {
-    [Season.Empty]: '',
     [Season.hot]: 'Chaud',
     [Season.cold]: 'Froid',
     [Season.mid_season]: 'Mi-saison',
 };
 
 export const categoryLabels: Record<Category, string> = {
-    [Category.Empty]: '',
     [Category.jacket]: 'Veste',
     [Category.socks]: 'Chaussettes',
     [Category.accessories]: 'Accessoires',
@@ -62,7 +69,6 @@ export const categoryLabels: Record<Category, string> = {
 };
 
 export const sizeLabels: Record<Size, string> = {
-    [Size.Empty]: "",
     [Size.zero_months]: "0 mois",
     [Size.one_month]: "1 mois",
     [Size.three_months]: "3 mois",
@@ -130,5 +136,4 @@ export const brandLabels: Record<Brand, string> = {
     [Brand.shein]: "Chine (Shein)",
     [Brand.uniqlo]: "Uniqlo",
     [Brand.benetton]: "United colours of Benetton",
-    [Brand.Empty]: ""
 };
