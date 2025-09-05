@@ -8,7 +8,7 @@ type Props = {
     variant?: "primary" | "danger" | "none";
 } & DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
 
-const Button = forwardRef(({children, icon, label, variant = "primary", className, ...rest}: Props, ref: ForwardedRef<HTMLButtonElement>) => {
+const Button = forwardRef(({children, icon, label, type = "button", variant = "primary", className, ...rest}: Props, ref: ForwardedRef<HTMLButtonElement>) => {
     const classes = (() => {
         switch (variant) {
             case "none":
@@ -19,7 +19,7 @@ const Button = forwardRef(({children, icon, label, variant = "primary", classNam
                 return "bg-red-700 hover:bg-red-800 text-white"
         }
     })()
-    return <button ref={ref} {...rest} className={`flex cursor-pointer shadow justify-center gap-2 p-3 rounded-lg items-center transition-colors ${classes} ${className} `}>
+    return <button ref={ref} type={type} {...rest} className={`flex cursor-pointer shadow justify-center gap-2 p-3 rounded-lg items-center transition-colors ${classes} ${className} `}>
         {icon && createElement(icon, {className: "w-4 h-4", "aria-hidden": "true"})}
         {label ?? children}
     </button>

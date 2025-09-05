@@ -2,14 +2,26 @@
 import SpeechRecognition, {useSpeechRecognition} from 'react-speech-recognition';
 import Button from "@/components/button";
 import {CircleIcon, PlayIcon, Trash} from "lucide-react";
-import {ForwardedRef, useEffect, useMemo, useState} from "react";
-import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels} from "@/lib/product";
-import {Brand, Category, Gender, Season, Size} from "@prisma/client";
+import {ForwardedRef, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {
+    brandLabels,
+    categoryLabels,
+    genderLabels,
+    getSizeFromCentimeter,
+    seasonLabels,
+    sizeLabels,
+    stateLabels
+} from "@/lib/product";
+import {Brand, Category, Size} from "@prisma/client";
 import {ProductFormAttributes} from "@/types/product";
+import {StepName} from "@/types/step";
+import {steps} from "@/lib/step";
 
 type Props = {
-    onVocalCommandAction: (attribute: ProductFormAttributes | "submit", value?: string) => void;
+    onVocalCommandAction: (attribute: ProductFormAttributes | "submit" | "step", value?: string) => void;
     clearPromptsRef: ForwardedRef<HTMLButtonElement>
+    step: StepName;
+    className?: string;
 }
 
 const brandFuzziness = {
@@ -36,104 +48,157 @@ const altervativeSizeCommands = {
     [Size.eighteen_months]: ["dix huit mois"],
     [Size.twenty_four_months]: ["vingt quatre mois"]
 }
-export default function VoiceDetection({onVocalCommandAction, clearPromptsRef}: Readonly<Props>) {
-    const [isMounted, setIsMounted] = useState(false);
-    const [prompts, setPrompts] = useState<{text: string, date: Date}[]>([])
-    const [currentTranscript, setCurrentTranscript] = useState("")
+type PromptStep = StepName | "move" | "unknown"
 
-    const brandCommands = useMemo(() => Object.entries(brandLabels).filter(([k]) => k !== Brand.Empty).map(([key, value]) => ({
+export default function VoiceDetection({onVocalCommandAction, clearPromptsRef, className, step}: Readonly<Props>) {
+    const [isMounted, setIsMounted] = useState(false);
+    const [prompts, setPrompts] = useState<{ text: string, date: Date, step: PromptStep}[]>([])
+    const [currentTranscript, setCurrentTranscript] = useState("")
+    const [hasTriggeredCommand, setHasTriggeredCommand] = useState(false)
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    const addPrompt = useCallback((command: string, step: PromptStep) => {
+        setPrompts(prompts => {
+            const lastPrompt = prompts[prompts.length-1]
+            // Add a prompt only if different from the last
+            if(!lastPrompt || !(lastPrompt.step === step && lastPrompt.text === command)) return [...prompts, {text: command, date: new Date(), step}]
+            return prompts
+        })
+    }, [])
+
+    const brandCommands = useMemo(() => Object.entries(brandLabels).map(([key, value]) => ({
         command: value.toLowerCase().replace(/\(.*\)]/g, "").replace(/œ/g, "oe"),
-        callback: (command: string) => {
-            if (command) onVocalCommandAction("brand", key)
+        callback: ({command}: { command: string}) => {
+            if (command) {
+                onVocalCommandAction("brand", key)
+                addPrompt(command, "brand")
+                setHasTriggeredCommand(true)
+            }
         },
         ...(key in brandFuzziness && {
             fuzzyMatchingThreshold: brandFuzziness[key as keyof typeof brandFuzziness],
             isFuzzyMatch: true
         })
-    })), [onVocalCommandAction])
+    })), [onVocalCommandAction, addPrompt])
 
-    const sizeCommands = useMemo(() => Object.entries(sizeLabels).filter(([k]) => k !== Size.Empty).map(([key, value]) => ({
-        command: [value, ...(key in altervativeSizeCommands ? altervativeSizeCommands[key as keyof typeof altervativeSizeCommands] : [])],
-        callback: (command: string) => {
-            if (command) onVocalCommandAction("size", key)
+    const sizeCommands = useMemo(() => [{
+        command: ["* Cm", "* centimètres"],
+        callback: (sizeInCentimeter: string) => {
+            if (sizeInCentimeter) {
+                onVocalCommandAction("size", getSizeFromCentimeter(parseInt(sizeInCentimeter)))
+                addPrompt(`${sizeInCentimeter} cm`, "size")
+                setHasTriggeredCommand(true)
+            }
         }
-    })), [onVocalCommandAction])
+    },
+        ...Object.entries(sizeLabels).map(([key, value]) => ({
+            command: [value, ...(key in altervativeSizeCommands ? altervativeSizeCommands[key as keyof typeof altervativeSizeCommands] : [])],
+            callback: ({command}: { command: string}) => {
+                if (command) {
+                    onVocalCommandAction("size", key)
+                    addPrompt(command, "size")
+                    setHasTriggeredCommand(true)
+                }
+            }
+        }))], [onVocalCommandAction, addPrompt])
 
-    const categoryCommands = useMemo(() => Object.entries(categoryLabels).filter(([k]) => k !== Category.Empty).map(([key, value]) => ({
+    const categoryCommands = useMemo(() => Object.entries(categoryLabels).map(([key, value]) => ({
         command: value.split("/").map(s => s.trim()),
-        callback: (command: string) => {
-            if (command) onVocalCommandAction("category", key)
+        callback: ({command}: { command: string}) => {
+            if (command) {
+                onVocalCommandAction("category", key)
+                addPrompt(command, "category")
+                setHasTriggeredCommand(true)
+            }
         },
         ...(key in categoryFuzziness && {
             fuzzyMatchingThreshold: categoryFuzziness[key as keyof typeof categoryFuzziness],
             isFuzzyMatch: true
         })
-    })), [onVocalCommandAction])
+    })), [onVocalCommandAction, addPrompt])
 
-    const seasonCommands = useMemo(() => Object.entries(seasonLabels).filter(([k]) => k !== Season.Empty).map(([key, value]) => ({
+    const seasonCommands = useMemo(() => Object.entries(seasonLabels).map(([key, value]) => ({
         command: value,
-        callback: (command: string) => {
-            if (command) onVocalCommandAction("season", key)
+        callback: ({command}: { command: string}) => {
+            if (command) {
+                onVocalCommandAction("season", key)
+                addPrompt(command, "season")
+                setHasTriggeredCommand(true)
+            }
         }
-    })), [onVocalCommandAction])
+    })), [onVocalCommandAction, addPrompt])
 
-    const genderCommands = useMemo(() => Object.entries(genderLabels).filter(([k]) => k !== Gender.Empty).map(([key, value]) => ({
+    const genderCommands = useMemo(() => Object.entries(genderLabels).map(([key, value]) => ({
         command: value,
-        callback: (command: string) => {
-            if (command) onVocalCommandAction("gender", key)
+        callback: ({command}: { command: string}) => {
+            if (command) {
+                onVocalCommandAction("gender", key)
+                addPrompt(command, "gender")
+                setHasTriggeredCommand(true)
+            }
         }
-    })), [onVocalCommandAction])
+    })), [onVocalCommandAction, addPrompt])
 
     const stateCommands = useMemo(() => Object.entries(stateLabels).map(([key, value]) => ({
         command: value,
-        callback: (command: string) => {
-            if (command) onVocalCommandAction("state", key)
+        callback: ({command}: { command: string}) => {
+            if (command) {
+                onVocalCommandAction("state", key)
+                addPrompt(command, "state")
+                setHasTriggeredCommand(true)
+            }
         }
-    })), [onVocalCommandAction])
+    })), [onVocalCommandAction, addPrompt])
+
+    const stepCommands = {
+        brand: brandCommands,
+        size: sizeCommands,
+        category: categoryCommands,
+        season: seasonCommands,
+        gender: genderCommands,
+        state: stateCommands,
+        photo: [{
+            command: ['capture photo', 'prendre photo', 'capture', 'photo', 'photos'],
+            callback: ({command}: { command: string }) => {
+                onVocalCommandAction("photo")
+                addPrompt(command, "photo")
+                setHasTriggeredCommand(true)
+            },
+        }],
+        name: [],
+        description: [],
+    }
 
     const commands = [
-        {
-            command: 'Nom du produit *',
-            callback: (name: string) => onVocalCommandAction("name", name),
-        },
-        {
-            command: 'Description *',
-            callback: (description: string) => onVocalCommandAction("description", description)
-        },
-        {
-            command: 'taille *',
-            callback: (size: string) => onVocalCommandAction("size", Object.entries(sizeLabels).find(([, value]) => value.toLowerCase().includes(size))?.[0]),
-        },
-        ...brandCommands,
-        ...sizeCommands,
-        ...categoryCommands,
-        ...seasonCommands,
-        ...genderCommands,
-        ...stateCommands,
-        {
-            command: ['capture photo', 'prendre photo', 'capture', 'photo', 'photos'],
+        ...stepCommands[step],
+        // Add a command for each step for being able to go to each step
+        ...Object.entries(steps).filter(([key]) => !["price"].includes(key)).map(([key, step]) => ({
+            command: "words" in step ? step.words : step.label,
+            matchInterim: true,
             callback: () => {
-                onVocalCommandAction("photo")
-            },
-        },
+                onVocalCommandAction("step", key)
+                addPrompt(step.label, "move")
+                setHasTriggeredCommand(true)
+            }
+        })),
         {
             command: ['envoyer', 'soumettre', 'valider', "suivant"],
             callback: () => {
                 onVocalCommandAction("submit")
+                setHasTriggeredCommand(true)
             },
         }
     ]
 
     function resetPrompt() {
         setPrompts([])
-        setCurrentTranscript("")
     }
 
     const {
         listening,
+        browserSupportsSpeechRecognition,
         interimTranscript,
-        finalTranscript,
-        browserSupportsSpeechRecognition
+        finalTranscript
     } = useSpeechRecognition({commands})
 
     useEffect(() => {
@@ -143,9 +208,27 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef}: 
     }, [interimTranscript]);
 
     useEffect(() => {
+
         if (currentTranscript) {
-            setPrompts([...prompts, {text: currentTranscript, date: new Date()}])
+            if(step === "name" && !steps.name.words.includes(currentTranscript.toLowerCase())) {
+                addPrompt(currentTranscript, "name")
+                onVocalCommandAction("name", currentTranscript)
+                setHasTriggeredCommand(true)
+            } else if(step === "description" && !steps.description.words.includes(currentTranscript.toLowerCase())) {
+                addPrompt(currentTranscript, "description")
+                onVocalCommandAction("description", currentTranscript)
+                setHasTriggeredCommand(true)
+            } else if (!hasTriggeredCommand) {
+                addPrompt(currentTranscript, "unknown")
+            }
             setCurrentTranscript("")
+            setHasTriggeredCommand(false)
+            if(containerRef.current) {
+                containerRef.current.scrollTo({
+                    top: containerRef.current.scrollHeight + 3000,
+                    behavior: "smooth"
+                })
+            }
         }
     }, [finalTranscript]);
 
@@ -161,9 +244,26 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef}: 
         return null
     }
 
+    function renderPrompt({text, date, step}: { text: string, date: Date, step: StepName | "move" | "unknown"}) {
+        const [color, label] = (() => {
+            if(step === "move") return ["bg-black text-white", `Déplacement  vers`]
+            if(step === "unknown") return ["bg-red-500 text-white", `Commande inconnue`]
+            if(step) return [steps[step].color, steps[step].label]
+            return ["", "Error"]
+        })()
+
+        return (
+            <li key={date.getTime()+text}>
+                <span
+                    className={`mr-2 py-1 px-2 rounded-full font-bold ${color}`}>{date.toLocaleTimeString()} - {label}</span>
+                <span className={""}>{text}</span>
+            </li>
+        )
+    }
+
     return (
-        <div className={"flex flex-col gap-4"}>
-            <div className={"flex justify-between"}>
+        <div className={`flex flex-col gap-4 ${className}`}>
+            <div className={"flex justify-between gap-4"}>
                 <Button
                     onClick={() => listening ? SpeechRecognition.stopListening() : SpeechRecognition.startListening({continuous: true})}
                     variant={"none"}
@@ -175,16 +275,11 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef}: 
                 </Button>
                 <Button onClick={resetPrompt} ref={clearPromptsRef} icon={Trash} label={"Effacer"}/>
             </div>
-            <div className={"flex flex-col border inset-shadow-sm grow rounded-lg border-gray-300 p-2 h-0 overflow-scroll gap-3"}>
+            <div ref={containerRef}
+                className={"flex flex-col border pb-4 min-h-32 inset-shadow-sm grow rounded-lg border-gray-300 p-2 h-0 overflow-scroll gap-3"}>
                 <div className={"font-bold"}>Liste des commandes:</div>
                 <ul className={"flex flex-col gap-2 text-sm"}>
-                    {prompts.map((prompt) => (
-                        <li key={prompt.date.getTime()}>
-                            <span className={"p-1 text-xs border font-bold bg-blue-200 rounded-md border-blue-300"}>{prompt.date.toLocaleTimeString()}</span>
-                            <span>&nbsp;-&nbsp;</span>
-                            <span className={"capitalize"}>{prompt.text}</span>
-                        </li>
-                    ))}
+                    {prompts.map(renderPrompt)}
                 </ul>
             </div>
         </div>

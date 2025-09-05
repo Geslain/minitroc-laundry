@@ -2,11 +2,9 @@ import {useFormContext} from "react-hook-form";
 import {Season} from "@prisma/client";
 import {seasonLabels} from "@/lib/product";
 import Button from "@/components/button";
-import Step from "@/app/dashboard/products/add/components/step";
+import Step from "@/app/dashboard/products/new/components/step";
 
-type Props = {}
-
-export default function SeasonStep({}: Readonly<Props>) {
+export default function SeasonStep() {
     const {register, setValue, getValues, watch} = useFormContext()
 
     watch("season")

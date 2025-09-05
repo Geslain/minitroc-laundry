@@ -1,5 +1,5 @@
-import NewProductForm from "@/components/new-product-form";
+import NewProductForm from "@/app/dashboard/products/new/components/new-product-form";
 
 export default function NewProductPage() {
-    return <NewProductForm/>
+    return (<NewProductForm/>)
 }

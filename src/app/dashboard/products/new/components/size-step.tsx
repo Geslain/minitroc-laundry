@@ -4,9 +4,7 @@ import {sizeLabels} from "@/lib/product";
 import Button from "@/components/button";
 import Step from "./step";
 
-type Props = {}
-
-export default function SizeStep({}: Readonly<Props>) {
+export default function SizeStep() {
     const {register, setValue, getValues, watch} = useFormContext()
 
     watch("size")

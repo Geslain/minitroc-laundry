@@ -2,10 +2,9 @@ import {useFormContext} from "react-hook-form";
 import {categoryLabels} from "@/lib/product";
 import {Category} from "@prisma/client";
 import Button from "@/components/button";
-import Step from "@/app/dashboard/products/add/components/step";
+import Step from "@/app/dashboard/products/new/components/step";
 
-type Props = {}
-export default function CategoryStep({}: Readonly<Props>) {
+export default function CategoryStep() {
     const {register, setValue, getValues, watch} = useFormContext()
 
     watch("category")

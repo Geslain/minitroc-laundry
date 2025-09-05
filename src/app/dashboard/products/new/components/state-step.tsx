@@ -4,9 +4,7 @@ import {stateLabels} from "@/lib/product";
 import Button from "@/components/button";
 import Step from "./step";
 
-type Props = {}
-
-export default function StateStep({}: Readonly<Props>) {
+export default function StateStep() {
     const {register, setValue, getValues, watch} = useFormContext()
 
     watch("state")

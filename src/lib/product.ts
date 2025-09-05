@@ -84,6 +84,7 @@ export const sizeLabels: Record<Size, string> = {
     [Size.six_years]: "6 ans",
 };
 
+
 export const statusLabels: Record<Status, string> = {
     [Status.finished]: "Terminé",
     [Status.in_progress]: "En cours",
@@ -137,3 +138,17 @@ export const brandLabels: Record<Brand, string> = {
     [Brand.uniqlo]: "Uniqlo",
     [Brand.benetton]: "United colours of Benetton",
 };
+
+export function getSizeFromCentimeter(centimeters: number): Size {
+    if(centimeters <= 56) return Size.zero_months;
+    if(centimeters <= 61) return Size.one_month;
+    if(centimeters <= 69) return Size.three_months;
+    if(centimeters <= 72) return Size.six_months;
+    if(centimeters <= 78) return Size.nine_months;
+    if(centimeters <= 83) return Size.twelve_months;
+    if(centimeters <= 86) return Size.eighteen_months;
+    if(centimeters <= 92) return Size.twenty_four_months;
+    if(centimeters <= 98) return Size.two_years;
+    if(centimeters <= 104) return Size.three_years;
+    return Size.four_years;
+}

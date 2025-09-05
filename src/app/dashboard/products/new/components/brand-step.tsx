@@ -2,11 +2,9 @@ import {useFormContext} from "react-hook-form";
 import {Brand} from "@prisma/client";
 import {brandLabels} from "@/lib/product";
 import Button from "@/components/button";
-import Step from "@/app/dashboard/products/add/components/step";
+import Step from "@/app/dashboard/products/new/components/step";
 
-type Props = {}
-
-export default function BrandStep({}: Readonly<Props>) {
+export default function BrandStep() {
     const {register, setValue, getValues, watch} = useFormContext()
 
     watch("brand")

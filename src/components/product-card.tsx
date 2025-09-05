@@ -6,6 +6,7 @@ import {toast} from "react-toastify";
 import {TrashIcon} from "lucide-react";
 import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels} from "@/lib/product";
 import Button from "@/components/button";
+import {steps} from "@/lib/step";
 
 type ProductCardProps = {
     product: Product;
@@ -47,28 +48,27 @@ export default function ProductCard({product}: Readonly<ProductCardProps>) {
                 <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description ?? 'Aucune description'}</p>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-            <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+            <span className={`px-2 py-1 text-blue-800 text-xs rounded-full ${steps.gender.color}`}>
               {genderLabels[product.gender]}
             </span>
-
-                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                    <span className={`px-2 py-1 text-green-800 text-xs rounded-full ${steps.season.color}`}>
               {seasonLabels[product.season]}
             </span>
 
 
                     {product.category && (
-                        <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                        <span className={`px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full ${steps.category.color}`}>
               {categoryLabels[product.category]}
             </span>
                     )}
 
                     {product.brand && (
-                        <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
+                        <span className={`px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full ${steps.brand.color}`}>
               {brandLabels[product.brand]}
             </span>
                     )}
 
-                    <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
+                    <span className={`px-2 py-1 bg-amber-100 text-gray-800 text-xs rounded-full ${steps.size.color}`}>
             {sizeLabels[product.size]}
           </span>
                 </div>

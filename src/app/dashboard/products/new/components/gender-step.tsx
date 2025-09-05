@@ -2,11 +2,9 @@ import {useFormContext} from "react-hook-form";
 import {Gender} from "@prisma/client";
 import {genderLabels} from "@/lib/product";
 import Button from "@/components/button";
-import Step from "@/app/dashboard/products/add/components/step";
+import Step from "@/app/dashboard/products/new/components/step";
 
-type Props = {}
-
-export default function GenderStep({}: Readonly<Props>) {
+export default function GenderStep() {
     const {register, setValue, getValues, watch} = useFormContext()
 
     watch("gender")

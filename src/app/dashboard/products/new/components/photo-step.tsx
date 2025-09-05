@@ -1,7 +1,7 @@
 import {useFormContext} from "react-hook-form";
 import Camera from "@/components/camera";
 import {ForwardedRef} from "react";
-import Step from "@/app/dashboard/products/add/components/step";
+import Step from "@/app/dashboard/products/new/components/step";
 
 type Props = {
     takePhotoRef: ForwardedRef<HTMLButtonElement>;
