@@ -22,7 +22,6 @@ import ReviewCard from "@/app/dashboard/products/new/components/review-card";
 import {addProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
 import {StepName, stepOrder} from "@/types/step";
-import 'swiper/css';
 
 const defaultValues = {
     category: undefined,
@@ -148,6 +147,10 @@ export default function NewProductForm() {
         }
     }
 
+    const handleStepClick = (step: StepName) => {
+        setCurrentStep(step)
+    }
+
 
     const variants = {
         enter: (direction: string) => ({
@@ -166,11 +169,11 @@ export default function NewProductForm() {
 
     return (
         <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className={"grid md:grid-cols-12 gap-4 p-4 h-full"}>
+            <form onSubmit={handleSubmit(onSubmit)} className={"grid md:grid-cols-2 lg:grid-cols-12 grid-rows-[50%] gap-4 p-4 h-full"}>
                 <VoiceDetection onVocalCommandAction={handleVocalCommand} clearPromptsRef={clearPromptsRef}
-                                className={"md:col-span-3 z-10 bg-white"} step={currentStep}/>
+                                className={"lg:col-span-3 md:col-span-1 z-10 bg-white"} step={currentStep}/>
 
-                <div className="flex flex-col gap-4 md:col-span-6 justify-between">
+                <div className="flex flex-col grow gap-4 lg:col-span-6 md:col-span-2 justify-between">
                     <AnimatePresence custom={direction} mode="popLayout">
                         <motion.div
                             key={currentStep}
@@ -179,27 +182,28 @@ export default function NewProductForm() {
                             initial="enter"
                             animate="center"
                             exit="exit">
-                                {currentStep === "name" && <NameStep/>}
-                                {currentStep === "description" && <DescriptionStep/>}
-                                {currentStep === "category" && <CategoryStep/>}
-                                {currentStep === "brand" && <BrandStep/>}
-                                {currentStep === "state" && <StateStep/>}
-                                {currentStep === "gender" && <GenderStep/>}
-                                {currentStep === "size" && <SizeStep/>}
-                                {currentStep === "season" && <SeasonStep/>}
-                                {currentStep === "photo" &&
-                                    <PhotoStep clearPhotoRef={clearPhotoRef} takePhotoRef={takePhotoRef}/>}
-            </motion.div>
-        </AnimatePresence>
-    <div className={"flex"}>
-        {currentStep !== "name" &&
-            <Button label={"Précédent"} onClick={handlePreviousStep}></Button>}
-        <Button label={currentStep === "photo" ? "Valider" : "Suivant"}
-                type={currentStep === "photo" ? "submit" : "button"} ref={submitButtonRef}
-                onClick={handleNextStep} className={"ml-auto"}/>
-    </div>
-</div>
-    <ReviewCard className={"md:col-span-3 z-10"}/>
-</form>
-</FormProvider>)
+                            {currentStep === "name" && <NameStep/>}
+                            {currentStep === "description" && <DescriptionStep/>}
+                            {currentStep === "category" && <CategoryStep/>}
+                            {currentStep === "brand" && <BrandStep/>}
+                            {currentStep === "state" && <StateStep/>}
+                            {currentStep === "gender" && <GenderStep/>}
+                            {currentStep === "size" && <SizeStep/>}
+                            {currentStep === "season" && <SeasonStep/>}
+                            {currentStep === "photo" &&
+                                <PhotoStep clearPhotoRef={clearPhotoRef} takePhotoRef={takePhotoRef}/>}
+                        </motion.div>
+                    </AnimatePresence>
+                    <div className={"flex"}>
+                        {currentStep !== "name" &&
+                            <Button label={"Précédent"} onClick={handlePreviousStep}></Button>}
+                        <Button label={currentStep === "photo" ? "Valider" : "Suivant"}
+                                type={currentStep === "photo" ? "submit" : "button"} ref={submitButtonRef}
+                                onClick={handleNextStep} className={"ml-auto"}/>
+                    </div>
+                </div>
+                <ReviewCard className={"lg:col-span-3 lg:col-start-10 md:col-span-1 md:col-start-2 md:row-start-1 z-10"}
+                            onStepClick={handleStepClick} currentStep={currentStep}/>
+            </form>
+        </FormProvider>)
 }

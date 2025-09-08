@@ -6,7 +6,7 @@ import {toast} from "react-toastify";
 import {TrashIcon} from "lucide-react";
 import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels} from "@/lib/product";
 import Button from "@/components/button";
-import {steps} from "@/lib/step";
+import {productAttributes} from "@/lib/product-attributes";
 
 type ProductCardProps = {
     product: Product;
@@ -48,27 +48,27 @@ export default function ProductCard({product}: Readonly<ProductCardProps>) {
                 <p className="text-sm text-gray-600 mt-1 line-clamp-2">{product.description ?? 'Aucune description'}</p>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-            <span className={`px-2 py-1 text-blue-800 text-xs rounded-full ${steps.gender.color}`}>
+            <span className={`px-2 py-1 text-blue-800 text-xs rounded-full ${productAttributes.gender.color}`}>
               {genderLabels[product.gender]}
             </span>
-                    <span className={`px-2 py-1 text-green-800 text-xs rounded-full ${steps.season.color}`}>
+                    <span className={`px-2 py-1 text-green-800 text-xs rounded-full ${productAttributes.season.color}`}>
               {seasonLabels[product.season]}
             </span>
 
 
                     {product.category && (
-                        <span className={`px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full ${steps.category.color}`}>
+                        <span className={`px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full ${productAttributes.category.color}`}>
               {categoryLabels[product.category]}
             </span>
                     )}
 
                     {product.brand && (
-                        <span className={`px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full ${steps.brand.color}`}>
+                        <span className={`px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full ${productAttributes.brand.color}`}>
               {brandLabels[product.brand]}
             </span>
                     )}
 
-                    <span className={`px-2 py-1 bg-amber-100 text-gray-800 text-xs rounded-full ${steps.size.color}`}>
+                    <span className={`px-2 py-1 bg-amber-100 text-gray-800 text-xs rounded-full ${productAttributes.size.color}`}>
             {sizeLabels[product.size]}
           </span>
                 </div>

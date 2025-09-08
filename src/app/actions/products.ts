@@ -1,6 +1,6 @@
 "use server"
 import prisma from "@/lib/db";
-import {supabaseServer} from "@/lib/supabaseServer";
+import {supabaseServer} from "@/lib/supabase-server";
 import {getCurrentUser} from "@/lib/user";
 import {revalidatePath} from "next/cache";
 import { createSchema } from "@/lib/validators/product";
@@ -199,7 +199,7 @@ export async function exportProductsToCSV() {
         // Data conversion
         const csvData = products.map(product => [
             `"${(product.name || '').replace(/"/g, '""')}"`,
-            `"${(product.description || '').replace(/"/g, '""')}"`,
+            `"${(product.description ?? '').replace(/"/g, '""')}"`,
             `"${product.photo || ''}"`,
             product.price.toString(),
             `"${genderLabels[product.gender] || product.gender}"`,

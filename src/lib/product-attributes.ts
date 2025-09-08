@@ -1,7 +1,8 @@
 import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels, stateLabels} from "@/lib/product";
 import {Brand, Category, Gender, Season, Size, State} from "@prisma/client";
+import {StepName} from "@/types/step";
 
-export const steps = {
+export const productAttributes : Record<StepName | "price", { label: string, words?: string[], color: string, formatter?: (value: never) => string}>= {
     name: {
         label: "Nom",
         words: ["nom du produit", "nom"],
@@ -13,7 +14,7 @@ export const steps = {
         color: "bg-green-100"
     },
     category: {
-        label: "catégorie",
+        label: "Catégorie",
         color: "bg-purple-100",
         formatter: (value: Category) => categoryLabels[value] || "-"
     },

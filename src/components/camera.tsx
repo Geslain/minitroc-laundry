@@ -30,15 +30,15 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
         onCapture(undefined)
     }
 
-    return <div>
-        <div className={"relative"}>
+    return <div className={"flex flex-col gap-4 items-center"}>
+        <div className={"relative max-w-[65%]"}>
             <Webcam
                 audio={false}
                 height={720}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
                 width={1280}
-                className={"rounded-md"}
+                className={"rounded-md m-auto"}
             />
             {photo &&
                 <div>
@@ -47,7 +47,7 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
                 </div>
             }
         </div>
-        <div className={"mt-2 flex gap-2"}>
+        <div className={"flex gap-2"}>
             <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoRef}/>
             <Button onClick={handleDelete} icon={TrashIcon} variant={"danger"} ref={clearPhotoRef} label={"Supprimer photo"}/>
         </div>

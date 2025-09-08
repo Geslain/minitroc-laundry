@@ -15,7 +15,7 @@ import {
 import {Brand, Category, Size} from "@prisma/client";
 import {ProductFormAttributes} from "@/types/product";
 import {StepName} from "@/types/step";
-import {steps} from "@/lib/step";
+import {productAttributes} from "@/lib/product-attributes";
 
 type Props = {
     onVocalCommandAction: (attribute: ProductFormAttributes | "submit" | "step", value?: string) => void;
@@ -172,7 +172,7 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef, c
     const commands = [
         ...stepCommands[step],
         // Add a command for each step for being able to go to each step
-        ...Object.entries(steps).filter(([key]) => !["price"].includes(key)).map(([key, step]) => ({
+        ...Object.entries(productAttributes).filter(([key]) => !["price"].includes(key)).map(([key, step]) => ({
             command: "words" in step ? step.words : step.label,
             matchInterim: true,
             callback: () => {
@@ -210,11 +210,11 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef, c
     useEffect(() => {
 
         if (currentTranscript) {
-            if(step === "name" && !steps.name.words.includes(currentTranscript.toLowerCase())) {
+            if(step === "name" && !productAttributes.name.words.includes(currentTranscript.toLowerCase())) {
                 addPrompt(currentTranscript, "name")
                 onVocalCommandAction("name", currentTranscript)
                 setHasTriggeredCommand(true)
-            } else if(step === "description" && !steps.description.words.includes(currentTranscript.toLowerCase())) {
+            } else if(step === "description" && !productAttributes.description.words.includes(currentTranscript.toLowerCase())) {
                 addPrompt(currentTranscript, "description")
                 onVocalCommandAction("description", currentTranscript)
                 setHasTriggeredCommand(true)
@@ -248,7 +248,7 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef, c
         const [color, label] = (() => {
             if(step === "move") return ["bg-black text-white", `Déplacement  vers`]
             if(step === "unknown") return ["bg-red-500 text-white", `Commande inconnue`]
-            if(step) return [steps[step].color, steps[step].label]
+            if(step) return [productAttributes[step].color, productAttributes[step].label]
             return ["", "Error"]
         })()
 

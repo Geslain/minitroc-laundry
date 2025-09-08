@@ -18,7 +18,7 @@ export default function BrandStep() {
     return (
         <Step label={"Marque"} id={"brand"}>
             <input {...register("brand")} className={"hidden"}/>
-            <div className={"grid grid-cols-4 gap-4"}>
+            <div className={"grid grid-cols-4 md:grid-cols-8 gap-2"}>
                 {Object.entries(brandLabels).map(([key, value]) => <Button
                     variant={getValues("brand") === key ? "primary" : "none"} key={key} label={value}
                     onClick={handleChange(key as Brand)}/>)}
