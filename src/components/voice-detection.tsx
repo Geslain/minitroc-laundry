@@ -173,7 +173,7 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef, c
         ...stepCommands[step],
         // Add a command for each step for being able to go to each step
         ...Object.entries(productAttributes).filter(([key]) => !["price"].includes(key)).map(([key, step]) => ({
-            command: "words" in step ? step.words : step.label,
+            command: ("words" in step ? step.words : step.label) ?? "",
             matchInterim: true,
             callback: () => {
                 onVocalCommandAction("step", key)
@@ -210,11 +210,11 @@ export default function VoiceDetection({onVocalCommandAction, clearPromptsRef, c
     useEffect(() => {
 
         if (currentTranscript) {
-            if(step === "name" && !productAttributes.name.words.includes(currentTranscript.toLowerCase())) {
+            if(step === "name" && !productAttributes?.name?.words?.includes(currentTranscript.toLowerCase())) {
                 addPrompt(currentTranscript, "name")
                 onVocalCommandAction("name", currentTranscript)
                 setHasTriggeredCommand(true)
-            } else if(step === "description" && !productAttributes.description.words.includes(currentTranscript.toLowerCase())) {
+            } else if(step === "description" && !productAttributes?.description?.words?.includes(currentTranscript.toLowerCase())) {
                 addPrompt(currentTranscript, "description")
                 onVocalCommandAction("description", currentTranscript)
                 setHasTriggeredCommand(true)
