@@ -1,9 +1,9 @@
 "use client";
-import { Product } from "@prisma/client";
-import {useState, useEffect, useRef} from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { useForm } from "react-hook-form";
+import {Product} from "@prisma/client";
+import {useEffect, useRef, useState} from "react";
+import {useRouter} from "next/navigation";
+import {toast} from "react-toastify";
+import {useForm} from "react-hook-form";
 import Button from "@/components/button";
 import {
     brandLabels,
@@ -15,23 +15,23 @@ import {
     statusLabels
 } from "@/lib/product";
 import Image from "next/image";
-import { calculatePrice } from "@/lib/price";
+import {calculatePrice} from "@/lib/price";
 import Camera from "@/components/camera";
-import {z} from "zod";
-import {newProductSchema} from "@/lib/validators/product";
 import {updateProduct} from "@/app/actions/products";
+import {newProductSchema} from "@/lib/validators/product";
+import {z} from "zod";
 
 export type FormValues = z.input<typeof newProductSchema>
 
-export default function EditProductForm({ product }: { product: Product }) {
+export default function EditProductForm({product}: { product: Product }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(product.photo);
-    const [photoFile, setPhotoFile] = useState<File | null>(null);
     const takePhotoRef = useRef<HTMLButtonElement>(null);
     const clearPhotoRef = useRef<HTMLButtonElement>(null);
+    const [photoFile, setPhotoFile] = useState<File | null>(null);
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
+    const {register, handleSubmit, setValue, watch, formState: {errors}} = useForm<FormValues>({
         defaultValues: {
             name: product.name,
             description: product.description || "",
@@ -72,14 +72,15 @@ export default function EditProductForm({ product }: { product: Product }) {
 
     const handleCameraCapture = (imageSrc: Blob | undefined) => {
         if (imageSrc) {
-            const file = new File([imageSrc], "photo.jpg", { type: "image/jpeg" });
+            const file = new File([imageSrc], "photo.jpg", {type: "image/jpeg"});
+            setPhotoFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreviewImage(reader.result as string);
             };
             reader.readAsDataURL(file);
-            setPhotoFile(file);
         } else {
+            setPhotoFile(null);
             setPreviewImage(product.photo);
         }
     };
@@ -98,7 +99,6 @@ export default function EditProductForm({ product }: { product: Product }) {
             });
 
             // Ajouter la photo si elle existe (soit de l'input file soit de la caméra)
-
             if (photoFile) {
                 formData.append('photo', photoFile);
             }
@@ -121,238 +121,256 @@ export default function EditProductForm({ product }: { product: Product }) {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-6">Modifier le produit</h1>
-            <p className="text-gray-500 mb-4">ID du produit: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{product.id}</span></p>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Colonne de gauche */}
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                Nom du produit *
-                            </label>
-                            <input
-                                id="name"
-                                type="text"
-                                {...register("name", { required: "Le nom est requis" })}
-                                    className="w-full p-2 border rounded-md "
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Prix calculé automatiquement</p>
-                            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                            </label>
-                            <textarea
-                                id="description"
-                                {...register("description")}
-                                className="w-full p-2 border rounded-md h-20"
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
-                                Prix (€)
-                            </label>
-                            <input
-                                id="price"
-                                type="number"
-                                step="0.01"
-                                {...register("price", { valueAsNumber: true })}
-                                className="w-full p-2 border rounded-md bg-gray-100"
-                                disabled
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Prix calculé automatiquement</p>
-                        </div>
-
-                        <div>
-                            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                                Catégorie *
-                            </label>
-                            <select
-                                id="category"
-                                {...register("category", { required: "La catégorie est requise" })}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(categoryLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                            {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-1">
-                                Marque *
-                            </label>
-                            <select
-                                id="brand"
-                                {...register("brand", { required: "La marque est requise" })}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(brandLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                            {errors.brand && <p className="text-red-500 text-sm mt-1">{errors.brand.message}</p>}
-                        </div>
+        <div className={"flex justify-center h-full w-full p-5"}>
+            <div className="max-w-6xl mx-auto p-4 bg-white rounded-lg shadow-md flex flex-col overflow-hidden">
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <h1 className="text-2xl font-bold">Modifier le produit</h1>
+                        <p className="text-gray-500 mt-1">ID: <span
+                            className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">{product.id}</span></p>
                     </div>
-
-                    {/* Colonne de droite */}
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-                                Genre *
-                            </label>
-                            <select
-                                id="gender"
-                                {...register("gender", { required: "Le genre est requis" })}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(genderLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                            {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="size" className="block text-sm font-medium text-gray-700 mb-1">
-                                Taille *
-                            </label>
-                            <select
-                                id="size"
-                                {...register("size", { required: "La taille est requise" })}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(sizeLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                            {errors.size && <p className="text-red-500 text-sm mt-1">{errors.size.message}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="season" className="block text-sm font-medium text-gray-700 mb-1">
-                                Saison *
-                            </label>
-                            <select
-                                id="season"
-                                {...register("season", { required: "La saison est requise" })}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(seasonLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                            {errors.season && <p className="text-red-500 text-sm mt-1">{errors.season.message}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-                                État *
-                            </label>
-                            <select
-                                id="state"
-                                {...register("state", { required: "L'état est requis" })}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(stateLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                            {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-                                Statut
-                            </label>
-                            <select
-                                id="status"
-                                {...register("status")}
-                                className="w-full p-2 border rounded-md"
-                            >
-                                {Object.entries(statusLabels).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="flex space-x-4">
+                        <Button
+                            type="button"
+                            variant="none"
+                            label="Annuler"
+                            onClick={() => router.push('/dashboard/products')}
+                        />
+                        <Button
+                            type="submit"
+                            variant="primary"
+                            label={isSubmitting ? "Mise à jour..." : "Mettre à jour"}
+                            disabled={isSubmitting}
+                            onClick={handleSubmit(onSubmit)}
+                        />
                     </div>
                 </div>
 
-                {/* Section Photo */}
-                <div className="mt-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Photo
-                    </label>
+                <form onSubmit={handleSubmit(onSubmit)}
+                      className="flex flex-col md:flex-row gap-6 flex-grow overflow-hidden h-full">
+                    {/* Colonne de gauche - Informations produit */}
+                    <div className="md:w-2/3 overflow-y-auto pr-4 max-h-[calc(100vh-180px)]">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Colonne de gauche */}
+                            <div className="space-y-3">
+                                <div>
+                                    <label htmlFor="name" className="block text-xs font-medium text-gray-700 mb-0.5">
+                                        Nom du produit *
+                                    </label>
+                                    <input
+                                        id="name"
+                                        type="text"
+                                        {...register("name", {required: "Le nom est requis"})}
+                                        className="w-full p-2 border rounded-md"
+                                    />
+                                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                                </div>
 
-                    <div className="flex flex-col gap-6">
-                        {/* Aperçu de l'image */}
-                        {previewImage && (
-                            <div className="relative w-32 h-32 overflow-hidden rounded-md">
-                                <Image
-                                    src={previewImage}
-                                    alt="Aperçu du produit"
-                                    fill
-                                    className="object-cover"
-                                />
+                                <div>
+                                    <label htmlFor="description"
+                                           className="block text-sm font-medium text-gray-700 mb-1">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        id="description"
+                                        {...register("description")}
+                                        className="w-full p-1.5 border rounded-md h-16 text-sm"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Prix (€)
+                                    </label>
+                                    <input
+                                        id="price"
+                                        type="number"
+                                        step="0.01"
+                                        {...register("price", {valueAsNumber: true})}
+                                        className="w-full p-2 border rounded-md bg-gray-100"
+                                        disabled
+                                    />
+                                    <p className="text-xs text-gray-500 mt-0.5">Prix calculé automatiquement</p>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Catégorie *
+                                    </label>
+                                    <select
+                                        id="category"
+                                        {...register("category", {required: "La catégorie est requise"})}
+                                        className="w-full p-1.5 border rounded-md text-sm"
+                                    >
+                                        {Object.entries(categoryLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.category &&
+                                        <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Marque *
+                                    </label>
+                                    <select
+                                        id="brand"
+                                        {...register("brand", {required: "La marque est requise"})}
+                                        className="w-full p-2 border rounded-md"
+                                    >
+                                        {Object.entries(brandLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.brand &&
+                                        <p className="text-red-500 text-sm mt-1">{errors.brand.message}</p>}
+                                </div>
                             </div>
-                        )}
 
-                        {/* Options de photo */}
-                        <div className="flex flex-col gap-4">
-                            {/* Input file */}
-                            <div>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="block w-full text-sm text-gray-500
+                            {/* Colonne de droite */}
+                            <div className="space-y-3">
+                                <div>
+                                    <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Genre *
+                                    </label>
+                                    <select
+                                        id="gender"
+                                        {...register("gender", {required: "Le genre est requis"})}
+                                        className="w-full p-2 border rounded-md"
+                                    >
+                                        {Object.entries(genderLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.gender &&
+                                        <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="size" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Taille *
+                                    </label>
+                                    <select
+                                        id="size"
+                                        {...register("size", {required: "La taille est requise"})}
+                                        className="w-full p-2 border rounded-md"
+                                    >
+                                        {Object.entries(sizeLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.size && <p className="text-red-500 text-sm mt-1">{errors.size.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="season" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Saison *
+                                    </label>
+                                    <select
+                                        id="season"
+                                        {...register("season", {required: "La saison est requise"})}
+                                        className="w-full p-2 border rounded-md"
+                                    >
+                                        {Object.entries(seasonLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.season &&
+                                        <p className="text-red-500 text-sm mt-1">{errors.season.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+                                        État *
+                                    </label>
+                                    <select
+                                        id="state"
+                                        {...register("state", {required: "L'état est requis"})}
+                                        className="w-full p-2 border rounded-md"
+                                    >
+                                        {Object.entries(stateLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                    {errors.state &&
+                                        <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                                        Statut
+                                    </label>
+                                    <select
+                                        id="status"
+                                        {...register("status")}
+                                        className="w-full p-2 border rounded-md"
+                                    >
+                                        {Object.entries(statusLabels).map(([value, label]) => (
+                                            <option key={value} value={value}>{label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Colonne droite - Section Photo */}
+                    <div
+                        className="md:w-1/3 md:pl-6 md:border-l border-gray-200 overflow-y-auto max-h-[calc(100vh-180px)]">
+                        <h2 className="text-lg font-semibold mb-3">Photo du produit</h2>
+
+                        <div className="flex flex-col gap-6">
+                            {/* Aperçu de l'image */}
+                            {previewImage && (
+                                <div className="relative w-full h-48 overflow-hidden rounded-md">
+                                    <Image
+                                        src={previewImage}
+                                        alt="Aperçu du produit"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Options de photo */}
+                            <div className="flex flex-col gap-4">
+                                {/* Input file */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Télécharger une image
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-md file:border-0
                       file:text-sm file:font-semibold
                       file:bg-blue-50 file:text-blue-700
                       hover:file:bg-blue-100"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Laissez vide pour conserver l'image actuelle
-                                </p>
-                            </div>
+                                    />
+                                    <p className="text-xs text-gray-500 mt-0.5">
+                                        Laissez vide pour conserver l'image actuelle
+                                    </p>
+                                </div>
 
-                            {/* Ou utiliser la caméra */}
-                            <div className="mt-4">
-                                <p className="text-sm font-medium text-gray-700 mb-2">Ou prendre une photo avec la caméra</p>
-                                <Camera 
-                                    onCapture={handleCameraCapture} 
-                                    takePhotoRef={takePhotoRef} 
-                                    clearPhotoRef={clearPhotoRef} 
-                                />
+                                {/* Ou utiliser la caméra */}
+                                <div className="mt-2">
+                                    <p className="text-xs font-medium text-gray-700 mb-1">Ou prendre une photo avec la
+                                        caméra</p>
+                                    <Camera
+                                        onCapture={handleCameraCapture}
+                                        takePhotoRef={takePhotoRef}
+                                        clearPhotoRef={clearPhotoRef}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Boutons d'action */}
-                <div className="flex justify-end space-x-4 mt-8">
-                    <Button
-                        type="button"
-                        variant="none"
-                        label="Annuler"
-                        onClick={() => router.push('/dashboard/products')}
-                    />
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        label={isSubmitting ? "Mise à jour..." : "Mettre à jour"}
-                        disabled={isSubmitting}
-                    />
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     );
 }
