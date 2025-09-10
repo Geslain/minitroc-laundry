@@ -169,7 +169,7 @@ export default function NewProductForm() {
 
     return (
         <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className={"grid md:grid-cols-2 lg:grid-cols-12 grid-rows-[50%] gap-4 p-4 h-full"}>
+            <form onSubmit={handleSubmit(onSubmit)} className={"grid md:grid-cols-2 lg:grid-cols-12 lg:grid-rows-[100%] grid-rows-[50%] gap-4 p-4 h-full"}>
                 <VoiceDetection onVocalCommandAction={handleVocalCommand} clearPromptsRef={clearPromptsRef}
                                 className={"lg:col-span-3 md:col-span-1 z-10 bg-white"} step={currentStep}/>
 

@@ -14,6 +14,18 @@ import {
     statusLabels
 } from "@/lib/product";
 
+export async function getProduct(id: string) {
+    const user = await getCurrentUser()
+
+    return prisma.product.findUnique({
+        where: {
+            id,
+            userId: user.id
+        }
+    });
+}
+
+
 export async function getProducts() {
     const user = await getCurrentUser()
 

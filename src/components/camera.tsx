@@ -30,7 +30,7 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
         onCapture(undefined)
     }
 
-    return <div className={"flex flex-col gap-4 items-center"}>
+    return <div className={"flex lg:flex-col flex-row-reverse gap-4 items-center justify-evenly"}>
         <div className={"relative max-w-[65%]"}>
             <Webcam
                 audio={false}
@@ -47,7 +47,7 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
                 </div>
             }
         </div>
-        <div className={"flex gap-2"}>
+        <div className={"flex lg:flex-row flex-col gap-2 lg:self-center self-start justify-center"}>
             <Button onClick={handleCapture} icon={CameraIcon} label={"Prendre photo"} ref={takePhotoRef}/>
             <Button onClick={handleDelete} icon={TrashIcon} variant={"danger"} ref={clearPhotoRef} label={"Supprimer photo"}/>
         </div>

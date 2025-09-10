@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {Product} from '@prisma/client';
 import {deleteProduct} from "@/app/actions/products";
 import {toast} from "react-toastify";
-import {TrashIcon} from "lucide-react";
+import {EditIcon, TrashIcon} from "lucide-react";
 import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels} from "@/lib/product";
 import Button from "@/components/button";
 import {productAttributes} from "@/lib/product-attributes";
@@ -29,6 +29,10 @@ export default function ProductCard({product}: Readonly<ProductCardProps>) {
         }
 
         toast("Produit supprimé", {type: "success"});
+    }
+
+    const handleEdit = async () => {
+        
     }
 
     return (
@@ -57,25 +61,31 @@ export default function ProductCard({product}: Readonly<ProductCardProps>) {
 
 
                     {product.category && (
-                        <span className={`px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full ${productAttributes.category.color}`}>
+                        <span
+                            className={`px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full ${productAttributes.category.color}`}>
               {categoryLabels[product.category]}
             </span>
                     )}
 
                     {product.brand && (
-                        <span className={`px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full ${productAttributes.brand.color}`}>
+                        <span
+                            className={`px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full ${productAttributes.brand.color}`}>
               {brandLabels[product.brand]}
             </span>
                     )}
 
-                    <span className={`px-2 py-1 bg-amber-100 text-gray-800 text-xs rounded-full ${productAttributes.size.color}`}>
+                    <span
+                        className={`px-2 py-1 bg-amber-100 text-gray-800 text-xs rounded-full ${productAttributes.size.color}`}>
             {sizeLabels[product.size]}
           </span>
                 </div>
 
                 <div className="mt-4 flex justify-between grow items-end">
                     <span className="text-xl font-bold text-indigo-600">{formatPrice(product.price)}</span>
-                    <Button icon={TrashIcon} variant={"danger"} onClick={() => handleDelete()}/>
+                    <div className={"flex gap-2"}>
+                        <Button icon={EditIcon} variant={"primary"} onClick={() => handleEdit()}/>
+                        <Button icon={TrashIcon} variant={"danger"} onClick={() => handleDelete()}/>
+                    </div>
                 </div>
             </div>
         </div>

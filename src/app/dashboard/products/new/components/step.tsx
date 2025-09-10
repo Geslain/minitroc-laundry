@@ -1,3 +1,4 @@
+import useMediaQuery from "@/hooks/use-media-query";
 
 type Props = {
     label: string
@@ -6,8 +7,9 @@ type Props = {
 }
 
 export default function Step({label, id, children}: Readonly<Props>) {
+    const isMobile = useMediaQuery("(max-width: 1024px)");
     return<div className={"flex flex-col gap-8"}>
-        <label htmlFor={id} className={"text-2xl font-bold text-center"}>{label}</label>
+        {!isMobile && <label htmlFor={id} className={"text-2xl font-bold text-center"}>{label}</label>}
         {children}
     </div>
 }
