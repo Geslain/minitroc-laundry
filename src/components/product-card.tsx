@@ -7,12 +7,14 @@ import {EditIcon, TrashIcon} from "lucide-react";
 import {brandLabels, categoryLabels, genderLabels, seasonLabels, sizeLabels} from "@/lib/product";
 import Button from "@/components/button";
 import {productAttributes} from "@/lib/product-attributes";
+import {useRouter} from "next/navigation";
 
 type ProductCardProps = {
     product: Product;
 };
 
 export default function ProductCard({product}: Readonly<ProductCardProps>) {
+    const router = useRouter();
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('fr-FR', {
             style: 'currency',
@@ -32,7 +34,7 @@ export default function ProductCard({product}: Readonly<ProductCardProps>) {
     }
 
     const handleEdit = async () => {
-        
+        router.push(`/dashboard/products/${product.id}/edit`);
     }
 
     return (
