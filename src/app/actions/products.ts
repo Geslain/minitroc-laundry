@@ -3,7 +3,7 @@ import prisma from "@/lib/db";
 import {supabaseServer} from "@/lib/supabase-server";
 import {getCurrentUser} from "@/lib/user";
 import {revalidatePath} from "next/cache";
-import { createSchema } from "@/lib/validators/product";
+import {createSchema} from "@/lib/validators/product";
 import {
     brandLabels,
     categoryLabels,
@@ -61,7 +61,7 @@ export async function addProduct(formData: FormData) {
     const parsed = createSchema.safeParse(data);
     if (!parsed.success) {
         console.log(parsed.error);
-        return { error: parsed.error.message };
+        return {error: parsed.error.message};
     }
 
     // Upload Supabase Storage
@@ -72,7 +72,7 @@ export async function addProduct(formData: FormData) {
         .storage
         .from("photos")
         .upload(photoKey, arrayBuf, {contentType: file.type, upsert: false});
-    if (upErr) return { error: upErr.message };
+    if (upErr) return {error: upErr.message};
 
     const {data: publicUrlData} = supabase.storage.from("photos").getPublicUrl(photoKey);
     const photoUrl = publicUrlData.publicUrl;
@@ -92,15 +92,15 @@ export async function deleteProduct(id: string) {
     const supabase = supabaseServer();
 
     const product = await prisma.product.findUnique({
-        where: { id, userId: user.id },
-        select: { photoKey: true, name: true }
+        where: {id, userId: user.id},
+        select: {photoKey: true, name: true}
     });
 
     if (!product) {
-       return { error: 'Produit non trouvé' };
+        return {error: 'Produit non trouvé'};
     }
 
-    const { error: storageError } = await supabase.storage
+    const {error: storageError} = await supabase.storage
         .from("photos")
         .remove([product.photoKey]);
 
@@ -109,7 +109,7 @@ export async function deleteProduct(id: string) {
     }
 
     await prisma.product.delete({
-        where: { id, userId: user.id }
+        where: {id, userId: user.id}
     })
 
     revalidatePath('/dashboard/products')
@@ -125,8 +125,8 @@ export async function deleteAllProducts() {
 
         // Get all products with their photoKeys
         const products = await prisma.product.findMany({
-            where: { userId: user.id },
-            select: { photoKey: true }
+            where: {userId: user.id},
+            select: {photoKey: true}
         });
 
         // Delete images from storage
@@ -134,7 +134,7 @@ export async function deleteAllProducts() {
             const photoKeys = products.map(p => p.photoKey).filter(Boolean);
 
             if (photoKeys.length > 0) {
-                const { error: storageError } = await supabase.storage
+                const {error: storageError} = await supabase.storage
                     .from("photos")
                     .remove(photoKeys);
 
@@ -150,7 +150,7 @@ export async function deleteAllProducts() {
 
         // Delete all user's products
         const result = await prisma.product.deleteMany({
-            where: { userId: user.id }
+            where: {userId: user.id}
         });
 
         revalidatePath('/dashboard/products');
@@ -171,13 +171,97 @@ export async function deleteAllProducts() {
 }
 
 
+export async function updateProduct(id: string, formData: FormData) {
+    const user = await getCurrentUser();
+
+    // Récupérer l'ID du produit
+    if (!id) {
+        return {error: "ID du produit manquant"};
+    }
+
+    // Vérifier que le produit appartient à l'utilisateur
+    const existingProduct = await prisma.product.findUnique({
+        where: {id, userId: user.id},
+        select: {photoKey: true}
+    });
+
+    if (!existingProduct) {
+        return {error: "Produit non trouvé"};
+    }
+
+    // Données de texte
+    const data = {
+        name: String(formData.get("name") || ""),
+        description: String(formData.get("description") || ""),
+        price: Number(formData.get("price") || 0),
+        gender: String(formData.get("gender") || ""),
+        category: String(formData.get("category") || ""),
+        size: String(formData.get("size") || ""),
+        season: String(formData.get("season") || ""),
+        brand: String(formData.get("brand") || ""),
+        status: String(formData.get("status") || ""),
+        state: String(formData.get("state") || ""),
+    };
+
+    const parsed = createSchema.safeParse(data);
+    if (!parsed.success) {
+        console.log(parsed.error);
+        return {error: parsed.error.message};
+    }
+
+
+    // Vérifier s'il y a une nouvelle photo
+    const file = formData.get("photo") as File | null;
+
+
+    let photoUrl = undefined;
+    let photoKey = undefined;
+
+    if (file && file.size > 0) {
+        // Supprimer l'ancienne photo si elle existe
+        const supabase = supabaseServer();
+        if (existingProduct.photoKey) {
+            await supabase.storage.from("photos").remove([existingProduct.photoKey]);
+        }
+
+        // Télécharger la nouvelle photo
+        const arrayBuf = await file.arrayBuffer();
+        const newPhotoKey = `photos/${user.id}/${Date.now()}-${file.name}`;
+        const {error: upErr} = await supabase
+            .storage
+            .from("photos")
+            .upload(newPhotoKey, arrayBuf, {contentType: file.type, upsert: false});
+
+        if (upErr) return {error: upErr.message};
+
+        const {data: publicUrlData} = supabase.storage.from("photos").getPublicUrl(newPhotoKey);
+        photoUrl = publicUrlData.publicUrl;
+        photoKey = newPhotoKey;
+    }
+
+    // Mettre à jour le produit
+    const updateData = {
+        ...parsed.data,
+        ...(photoUrl && {photo: photoUrl}),
+        ...(photoKey && {photoKey: photoKey}),
+    };
+
+    const updatedProduct = await prisma.product.update({
+        where: {id, userId: user.id},
+        data: updateData
+    });
+
+    revalidatePath('/dashboard/products');
+    return updatedProduct;
+}
+
 export async function exportProductsToCSV() {
     const user = await getCurrentUser();
 
     try {
         const products = await prisma.product.findMany({
-            where: { userId: user.id },
-            orderBy: { createdAt: "desc" },
+            where: {userId: user.id},
+            orderBy: {createdAt: "desc"},
             select: {
                 name: true,
                 description: true,

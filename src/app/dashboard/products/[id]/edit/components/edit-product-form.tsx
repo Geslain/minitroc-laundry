@@ -1,6 +1,6 @@
 "use client";
 import { Product } from "@prisma/client";
-import { useState } from "react";
+import {useState, useEffect, useRef} from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
@@ -15,30 +15,24 @@ import {
     statusLabels
 } from "@/lib/product";
 import Image from "next/image";
+import { calculatePrice } from "@/lib/price";
+import Camera from "@/components/camera";
+import {z} from "zod";
+import {newProductSchema} from "@/lib/validators/product";
+import {updateProduct} from "@/app/actions/products";
 
-type FormValues = {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    gender: string;
-    season: string;
-    size: string;
-    status: string;
-    brand: string;
-    state: string;
-    price: number;
-    photo?: File;
-};
+export type FormValues = z.input<typeof newProductSchema>
 
 export default function EditProductForm({ product }: { product: Product }) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [previewImage, setPreviewImage] = useState<string | null>(product.photo);
+    const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const takePhotoRef = useRef<HTMLButtonElement>(null);
+    const clearPhotoRef = useRef<HTMLButtonElement>(null);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormValues>({
         defaultValues: {
-            id: product.id,
             name: product.name,
             description: product.description || "",
             category: product.category,
@@ -52,14 +46,41 @@ export default function EditProductForm({ product }: { product: Product }) {
         }
     });
 
+    // Observer les changements pour calculer le prix automatiquement
+    const category = watch("category");
+    const brand = watch("brand");
+    const state = watch("state");
+
+    useEffect(() => {
+        if (category && brand && state) {
+            const newPrice = calculatePrice(brand, category, state);
+            setValue("price", newPrice);
+        }
+    }, [category, brand, state, setValue]);
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            setPhotoFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreviewImage(reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCameraCapture = (imageSrc: Blob | undefined) => {
+        if (imageSrc) {
+            const file = new File([imageSrc], "photo.jpg", { type: "image/jpeg" });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+            setPhotoFile(file);
+        } else {
+            setPreviewImage(product.photo);
         }
     };
 
@@ -76,20 +97,15 @@ export default function EditProductForm({ product }: { product: Product }) {
                 }
             });
 
-            // Ajouter la photo si elle existe
-            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-            if (fileInput?.files?.[0]) {
-                formData.append('photo', fileInput.files[0]);
+            // Ajouter la photo si elle existe (soit de l'input file soit de la caméra)
+
+            if (photoFile) {
+                formData.append('photo', photoFile);
             }
 
-            const response = await fetch('/api/products/update', {
-                method: 'POST',
-                body: formData
-            });
+            const result = await updateProduct(product.id, formData);
 
-            const result = await response.json();
-
-            if (result.error) {
+            if ('error' in result) {
                 toast.error(result.error);
             } else {
                 toast.success('Produit mis à jour avec succès');
@@ -107,10 +123,9 @@ export default function EditProductForm({ product }: { product: Product }) {
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold mb-6">Modifier le produit</h1>
+            <p className="text-gray-500 mb-4">ID du produit: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{product.id}</span></p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <input type="hidden" {...register("id")} />
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Colonne de gauche */}
                     <div className="space-y-4">
@@ -122,8 +137,9 @@ export default function EditProductForm({ product }: { product: Product }) {
                                 id="name"
                                 type="text"
                                 {...register("name", { required: "Le nom est requis" })}
-                                className="w-full p-2 border rounded-md"
-                            />
+                                    className="w-full p-2 border rounded-md "
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Prix calculé automatiquement</p>
                             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
                         </div>
 
@@ -147,8 +163,10 @@ export default function EditProductForm({ product }: { product: Product }) {
                                 type="number"
                                 step="0.01"
                                 {...register("price", { valueAsNumber: true })}
-                                className="w-full p-2 border rounded-md"
+                                className="w-full p-2 border rounded-md bg-gray-100"
+                                disabled
                             />
+                            <p className="text-xs text-gray-500 mt-1">Prix calculé automatiquement</p>
                         </div>
 
                         <div>
@@ -273,7 +291,7 @@ export default function EditProductForm({ product }: { product: Product }) {
                         Photo
                     </label>
 
-                    <div className="flex items-start gap-6">
+                    <div className="flex flex-col gap-6">
                         {/* Aperçu de l'image */}
                         {previewImage && (
                             <div className="relative w-32 h-32 overflow-hidden rounded-md">
@@ -286,22 +304,35 @@ export default function EditProductForm({ product }: { product: Product }) {
                             </div>
                         )}
 
-                        {/* Input file */}
-                        <div>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="block w-full text-sm text-gray-500
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-md file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">
-                                Laissez vide pour conserver l'image actuelle
-                            </p>
+                        {/* Options de photo */}
+                        <div className="flex flex-col gap-4">
+                            {/* Input file */}
+                            <div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-blue-50 file:text-blue-700
+                      hover:file:bg-blue-100"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Laissez vide pour conserver l'image actuelle
+                                </p>
+                            </div>
+
+                            {/* Ou utiliser la caméra */}
+                            <div className="mt-4">
+                                <p className="text-sm font-medium text-gray-700 mb-2">Ou prendre une photo avec la caméra</p>
+                                <Camera 
+                                    onCapture={handleCameraCapture} 
+                                    takePhotoRef={takePhotoRef} 
+                                    clearPhotoRef={clearPhotoRef} 
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
