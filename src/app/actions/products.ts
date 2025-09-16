@@ -1,6 +1,6 @@
 "use server"
 import prisma from "@/lib/db";
-import {supabaseServer} from "@/lib/supabase-server";
+import { LocalStorage } from "@/lib/local-storage-service";
 import {getCurrentUser} from "@/lib/user";
 import {revalidatePath} from "next/cache";
 import {createSchema} from "@/lib/validators/product";
@@ -25,7 +25,6 @@ export async function getProduct(id: string) {
     });
 }
 
-
 export async function getProducts() {
     const user = await getCurrentUser()
 
@@ -46,7 +45,7 @@ export async function addProduct(formData: FormData) {
 
     // text fields
     const data = {
-        name: String(formData.getAll("name") || ""),
+        name: String(formData.get("name") || ""),
         description: String(formData.get("description") || ""),
         price: Number(formData.get("price") || 0),
         gender: String(formData.get("gender") || ""),
@@ -64,32 +63,24 @@ export async function addProduct(formData: FormData) {
         return {error: parsed.error.message};
     }
 
-    // Upload Supabase Storage
-    const supabase = supabaseServer();
-    const arrayBuf = await file.arrayBuffer();
-    const photoKey = `photos/${user.id}/${Date.now()}-${file.name}`;
-    const {error: upErr} = await supabase
-        .storage
-        .from("photos")
-        .upload(photoKey, arrayBuf, {contentType: file.type, upsert: false});
-    if (upErr) return {error: upErr.message};
-
-    const {data: publicUrlData} = supabase.storage.from("photos").getPublicUrl(photoKey);
-    const photoUrl = publicUrlData.publicUrl;
+    // Upload to local storage
+    const uploadResult = await LocalStorage.uploadFile(file, user.id);
+    if (!uploadResult.success) {
+        return {error: uploadResult.error};
+    }
 
     return prisma.product.create({
         data: {
             userId: user.id,
             ...parsed.data,
-            photo: photoUrl,
-            photoKey: photoKey,
+            photo: uploadResult.photoUrl!,
+            photoKey: uploadResult.photoKey!,
         },
     });
 }
 
 export async function deleteProduct(id: string) {
     const user = await getCurrentUser()
-    const supabase = supabaseServer();
 
     const product = await prisma.product.findUnique({
         where: {id, userId: user.id},
@@ -100,12 +91,9 @@ export async function deleteProduct(id: string) {
         return {error: 'Produit non trouvé'};
     }
 
-    const {error: storageError} = await supabase.storage
-        .from("photos")
-        .remove([product.photoKey]);
-
-    if (storageError) {
-        return {error: 'Erreur lors de la suppression du fichier:'};
+    const deleteResult = await LocalStorage.deleteFile(product.photoKey);
+    if (!deleteResult.success) {
+        return {error: 'Erreur lors de la suppression du fichier'};
     }
 
     await prisma.product.delete({
@@ -121,7 +109,6 @@ export async function deleteProduct(id: string) {
 export async function deleteAllProducts() {
     try {
         const user = await getCurrentUser();
-        const supabase = supabaseServer();
 
         // Get all products with their photoKeys
         const products = await prisma.product.findMany({
@@ -134,12 +121,9 @@ export async function deleteAllProducts() {
             const photoKeys = products.map(p => p.photoKey).filter(Boolean);
 
             if (photoKeys.length > 0) {
-                const {error: storageError} = await supabase.storage
-                    .from("photos")
-                    .remove(photoKeys);
-
-                if (storageError) {
-                    console.error('Erreur lors de la suppression des images:', storageError);
+                const deleteResult = await LocalStorage.deleteFiles(photoKeys);
+                if (!deleteResult.success) {
+                    console.error('Erreur lors de la suppression des images:', deleteResult.error);
                     return {
                         success: false,
                         error: 'Erreur lors de la suppression des images'
@@ -170,16 +154,12 @@ export async function deleteAllProducts() {
     }
 }
 
-
 export async function updateProduct(id: string, formData: FormData) {
     const user = await getCurrentUser();
-
-    // Récupérer l'ID du produit
     if (!id) {
         return {error: "ID du produit manquant"};
     }
 
-    // Vérifier que le produit appartient à l'utilisateur
     const existingProduct = await prisma.product.findUnique({
         where: {id, userId: user.id},
         select: {photoKey: true}
@@ -189,7 +169,6 @@ export async function updateProduct(id: string, formData: FormData) {
         return {error: "Produit non trouvé"};
     }
 
-    // Données de texte
     const data = {
         name: String(formData.get("name") || ""),
         description: String(formData.get("description") || ""),
@@ -209,37 +188,26 @@ export async function updateProduct(id: string, formData: FormData) {
         return {error: parsed.error.message};
     }
 
-
-    // Vérifier s'il y a une nouvelle photo
     const file = formData.get("photo") as File | null;
-
-
     let photoUrl = undefined;
     let photoKey = undefined;
 
     if (file && file.size > 0) {
-        // Supprimer l'ancienne photo si elle existe
-        const supabase = supabaseServer();
+        // Delete the old photo
         if (existingProduct.photoKey) {
-            await supabase.storage.from("photos").remove([existingProduct.photoKey]);
+            await LocalStorage.deleteFile(existingProduct.photoKey);
         }
 
-        // Télécharger la nouvelle photo
-        const arrayBuf = await file.arrayBuffer();
-        const newPhotoKey = `photos/${user.id}/${Date.now()}-${file.name}`;
-        const {error: upErr} = await supabase
-            .storage
-            .from("photos")
-            .upload(newPhotoKey, arrayBuf, {contentType: file.type, upsert: false});
+        // Upload new photo
+        const uploadResult = await LocalStorage.uploadFile(file, user.id);
+        if (!uploadResult.success) {
+            return {error: uploadResult.error};
+        }
 
-        if (upErr) return {error: upErr.message};
-
-        const {data: publicUrlData} = supabase.storage.from("photos").getPublicUrl(newPhotoKey);
-        photoUrl = publicUrlData.publicUrl;
-        photoKey = newPhotoKey;
+        photoUrl = uploadResult.photoUrl;
+        photoKey = uploadResult.photoKey;
     }
 
-    // Mettre à jour le produit
     const updateData = {
         ...parsed.data,
         ...(photoUrl && {photo: photoUrl}),

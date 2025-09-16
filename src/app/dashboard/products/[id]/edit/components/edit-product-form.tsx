@@ -352,7 +352,7 @@ export default function EditProductForm({product}: { product: Product }) {
                       hover:file:bg-blue-100"
                                     />
                                     <p className="text-xs text-gray-500 mt-0.5">
-                                        Laissez vide pour conserver l'image actuelle
+                                        Laissez vide pour conserver l&apos;image actuelle
                                     </p>
                                 </div>
 

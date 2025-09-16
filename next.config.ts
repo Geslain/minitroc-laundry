@@ -2,13 +2,7 @@
 const nextConfig = {
     output: 'standalone',
     images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '*.supabase.co',
-                pathname: '/storage/v1/object/public/**'
-            }
-        ],
+        remotePatterns: [],
         unoptimized: true // Pour réduire la charge sur le Raspberry Pi
     },
     experimental: {
