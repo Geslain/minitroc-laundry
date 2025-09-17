@@ -1,4 +1,5 @@
-FROM node:22-alpine
+#FROM --platform=linux/amd64 node:22-alpine AS build_amd64
+FROM node:22-alpine AS build_amd64
 
 WORKDIR /app
 
@@ -19,9 +20,6 @@ RUN npx prisma generate
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ARG CLERK_SECRET_KEY
 ARG DATABASE_URL
-ARG SUPABASE_URL
-ARG SUPABASE_ANON_KEY
-ARG SUPABASE_SERVICE_ROLE
 ARG NEXT_PUBLIC_CLERK_SIGN_IN_URL
 ARG NEXT_PUBLIC_CLERK_SIGN_UP_URL
 
@@ -29,15 +27,22 @@ ARG NEXT_PUBLIC_CLERK_SIGN_UP_URL
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 ENV DATABASE_URL=$DATABASE_URL
-ENV SUPABASE_URL=$SUPABASE_URL
-ENV SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
-ENV SUPABASE_SERVICE_ROLE=$SUPABASE_SERVICE_ROLE
 ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=$NEXT_PUBLIC_CLERK_SIGN_IN_URL
 ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=$NEXT_PUBLIC_CLERK_SIGN_UP_URL
 
 # Build the application
-RUN npm run build
+#RUN npm run build
+
+# Create a startup script
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "Waiting for database..."' >> /app/start.sh && \
+    echo 'npx prisma migrate deploy' >> /app/start.sh && \
+    echo 'echo "Starting application..."' >> /app/start.sh && \
+    echo 'npm run dev' >> /app/start.sh && \
+#    echo 'npm start' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["/app/start.sh"]

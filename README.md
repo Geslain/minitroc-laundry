@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-MiniTroc Laundry is a web application dedicated to managing second-hand clothing and products for children. This platform allows users to catalog, manage, and valuate their items considering brands, condition, and other characteristics.
+MiniTroc Laundry is a web application dedicated to managing second-hand clothing and products for children. This platform allows users to catalog, manage, and valuate their items considering brands, condition, and other characteristics. The application uses a local file storage system with formidable for handling uploads.
 
 ## ✨ Features
 
@@ -22,11 +22,11 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - NPM
 - PostgreSQL database
-- Supabase account (for image storage)
 - Clerk account (for authentication)
+- Répertoire d'uploads local (pour le stockage des images)
 
 ### Installation
 
@@ -44,7 +44,8 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 3. Set up environment variables:
    ```bash
    cp .env.example .env.local
-   # Edit .env.local with your own API keys
+   # Edit .env.local with your own API keys and add the following line:
+   # UPLOAD_DIR=/path/to/your/uploads/folder
    ```
 
 4. Generate Prisma types:
@@ -66,7 +67,7 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
    cp .env.example .env
    ```
 
-2. Edit the `.env` file with your own credentials and API keys
+2. Edit the `.env` file with your own credentials and API keys (no additional configuration is needed for the upload directory as it is automatically mounted in the Docker volume)
 
 3. Build and start the containers:
    ```bash
@@ -80,6 +81,8 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 
 5. Access the application at [http://localhost:3000](http://localhost:3000)
 
+Notes: The local `./uploads` directory will be automatically mounted in the Docker container at the location `/app/uploads`.
+
 For detailed deployment instructions and environment configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
 
 ## 🏗️ Technologies
@@ -88,7 +91,7 @@ For detailed deployment instructions and environment configuration, see the [Dep
 - **Backend**: NextJS API Routes, Prisma
 - **Database**: PostgreSQL
 - **Authentication**: Clerk
-- **Storage**: Supabase Storage
+- **Storage**: Local file storage
 - **Forms**: React Hook Form, Zod
 - **UI/UX**: TailwindCSS, Lucide React
 - **Others**: React Speech Recognition, React Webcam
