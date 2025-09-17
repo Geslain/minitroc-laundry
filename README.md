@@ -12,7 +12,7 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 
 - **Authentication**: Secure login system with Clerk
 - **Product Management**: Add, edit, and delete items
-- **Photo Capture**: Take photos directly from the application
+- **Photo Capture**: Take high-resolution photos directly from the application
 - **Voice Recognition**: Voice commands to facilitate data entry
 - **CSV Export**: Generate CSV files for data analysis
 - **Automatic Pricing**: Calculate prices automatically based on brand and condition

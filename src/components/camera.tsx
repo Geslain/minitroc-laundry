@@ -13,9 +13,20 @@ type CameraProps = {
 const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>) => {
     const [photo, setPhoto] = useState<Blob | undefined>()
     const webcamRef = useRef<Webcam>(null);
+
+    // Configuration vidéo avec une meilleure résolution
+    const videoConstraints = {
+        width: 1920,
+        height: 1080,
+        facingMode: "user"
+    };
+
     const handleCapture = useCallback(
         async () => {
-            const imageSrc = webcamRef?.current?.getScreenshot();
+            const imageSrc = webcamRef?.current?.getScreenshot({
+                width: 1920,
+                height: 1080,
+            });
             if (imageSrc) {
                 const blob = await (await fetch(imageSrc)).blob();
                 setPhoto(blob)
@@ -34,11 +45,12 @@ const Camera = ({onCapture, takePhotoRef, clearPhotoRef}: Readonly<CameraProps>)
         <div className={"relative max-w-[65%]"}>
             <Webcam
                 audio={false}
-                height={720}
+                height={1080}
+                width={1920}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                width={1280}
-                className={"rounded-md m-auto"}
+                videoConstraints={videoConstraints}
+                className={"rounded-md m-auto w-full"}
             />
             {photo &&
                 <div>
