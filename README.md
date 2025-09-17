@@ -26,7 +26,7 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 - NPM
 - PostgreSQL database
 - Clerk account (for authentication)
-- Répertoire d'uploads local (pour le stockage des images)
+- Local upload directory (for image storage)
 
 ### Installation
 
@@ -69,7 +69,9 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 
 2. Edit the `.env` file with your own credentials and API keys (no additional configuration is needed for the upload directory as it is automatically mounted in the Docker volume)
 
-3. Build and start the containers:
+#### Development Environment
+
+3. Build and start containers for development:
    ```bash
    docker-compose up -d
    ```
@@ -81,7 +83,24 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 
 5. Access the application at [http://localhost:3000](http://localhost:3000)
 
-Notes: The local `./uploads` directory will be automatically mounted in the Docker container at the location `/app/uploads`.
+#### Production Environment
+
+3. Build and start containers for production:
+   ```bash
+   docker-compose -f docker-compose.production.yml up -d
+   ```
+
+4. Run migrations (first time only):
+   ```bash
+   docker-compose -f docker-compose.production.yml exec app npx prisma migrate deploy
+   ```
+
+5. Access the application at [http://localhost:3000](http://localhost:3000)
+
+Notes: 
+- Le répertoire local `./uploads` sera automatiquement monté dans le conteneur Docker à l'emplacement `/app/uploads`.
+- L'environnement de développement inclut le hot reload et est optimisé pour le développement.
+- L'environnement de production est optimisé pour les performances et la sécurité.
 
 For detailed deployment instructions and environment configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
 
