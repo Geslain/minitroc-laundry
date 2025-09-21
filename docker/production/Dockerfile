@@ -2,6 +2,18 @@ FROM --platform=linux/amd64 node:22-alpine AS builder
 
 WORKDIR /app
 
+# Définir l'argument et le rendre disponible comme variable d'environnement
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
+# Vérifier que la variable est bien définie
+RUN if [ -z "$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" ]; then \
+    echo "ERROR: NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not defined" && \
+    exit 1; \
+  else \
+    echo "✅ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is properly set"; \
+  fi
+
 # Copy package files and prisma schema first
 COPY package*.json ./
 COPY ../../prisma ./prisma/
@@ -19,7 +31,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:22-alpine AS production
+FROM --platform=linux/amd64 node:22-alpine AS production
 
 WORKDIR /app
 

@@ -98,9 +98,9 @@ MiniTroc Laundry is a web application dedicated to managing second-hand clothing
 5. Access the application at [http://localhost:3000](http://localhost:3000)
 
 Notes: 
-- Le répertoire local `./uploads` sera automatiquement monté dans le conteneur Docker à l'emplacement `/app/uploads`.
-- L'environnement de développement inclut le hot reload et est optimisé pour le développement.
-- L'environnement de production est optimisé pour les performances et la sécurité.
+- The local directory `./uploads` will be automatically mounted in the Docker container at the location `/app/uploads`.
+- The development environment includes hot reload and is optimized for development.
+- The production environment is optimized for performance and security.
 
 For detailed deployment instructions and environment configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
 
