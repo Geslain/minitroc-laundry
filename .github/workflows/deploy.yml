@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write       # nécessaire pour pousser sur GHCR
+      packages: write
+      attestations: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -59,8 +61,8 @@ jobs:
             set -euo pipefail
             export KUBECONFIG=/home/${USER}/.kube/config
             # Met à jour l'image avec le tag = SHA du commit
-            kubectl -n minitroc-laundry set image deploy/minitroc-laundry-web web=ghcr.io/${{ github.repository }}:${{ github.sha }}
+            kubectl -n minitroc-laundry set image deploy/minitroc-laundry-web minitroc-laundry=ghcr.io/${{ github.repository }}:${{ github.sha }}
             # Vérifie le rollout et échoue si ça ne passe pas
-            kubectl -n minitroc-laundry rollout status deploy/minitroc-laundry-web --timeout=120s
+            kubectl -n minitroc-laundry rollout status deploy/minitroc-laundry-web --timeout=500s
             # Affiche l'image effective
             kubectl -n minitroc-laundry get deploy/minitroc-laundry-web -o=jsonpath='{.spec.template.spec.containers[0].image}'; echo
