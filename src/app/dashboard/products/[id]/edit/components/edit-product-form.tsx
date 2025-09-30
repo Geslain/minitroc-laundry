@@ -320,15 +320,15 @@ export default function EditProductForm({product}: { product: Product }) {
                         className="md:w-1/3 md:pl-6 md:border-l border-gray-200 overflow-y-auto max-h-[calc(100vh-180px)]">
                         <h2 className="text-lg font-semibold mb-3">Photo du produit</h2>
 
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-6 justify-center items-center">
                             {/* Aperçu de l'image */}
                             {previewImage && (
-                                <div className="relative w-full h-48 overflow-hidden rounded-md">
+                                <div className="relative overflow-hidden rounded-md" style={{ width: 400, height: 400 }}>
                                     <Image
                                         src={previewImage}
-                                        alt="Aperçu du produit"
+                                        alt="Preview"
                                         fill
-                                        className="object-cover"
+                                        style={{ objectFit: "contain" }} // conserve l'orientation
                                     />
                                 </div>
                             )}

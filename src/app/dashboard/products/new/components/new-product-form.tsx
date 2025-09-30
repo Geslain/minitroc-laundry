@@ -173,12 +173,13 @@ export default function NewProductForm() {
                 <VoiceDetection onVocalCommandAction={handleVocalCommand} clearPromptsRef={clearPromptsRef}
                                 className={"lg:col-span-3 md:col-span-1 z-10 bg-white"} step={currentStep}/>
 
-                <div className="flex flex-col grow gap-4 lg:col-span-6 md:col-span-2 justify-between">
+                <div className="flex flex-col grow gap-4 lg:col-span-6 md:col-span-2 justify-between ">
                     <AnimatePresence custom={direction} mode="popLayout">
                         <motion.div
                             key={currentStep}
                             custom={direction}
                             variants={variants}
+                            className={"flex grow w-full"}
                             initial="enter"
                             animate="center"
                             exit="exit">
