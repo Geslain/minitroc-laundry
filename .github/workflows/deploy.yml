@@ -61,7 +61,7 @@ jobs:
             set -euo pipefail
             export KUBECONFIG=/home/${USER}/.kube/config
             # Met à jour l'image avec le tag = SHA du commit
-            kubectl -n minitroc-laundry set image deploy/minitroc-laundry-web minitroc-laundry=ghcr.io/${{ github.repository }}:${{ github.sha }}
+            kubectl -n minitroc-laundry set image deploy/minitroc-laundry-web minitroc-laundry=ghcr.io/${{ toLower(github.repository) }}:${{ github.sha }}
             # Vérifie le rollout et échoue si ça ne passe pas
             kubectl -n minitroc-laundry rollout status deploy/minitroc-laundry-web --timeout=500s
             # Affiche l'image effective
