@@ -12,8 +12,14 @@ jobs:
       packages: write
       attestations: write
       id-token: write
+    outputs:
+      lc_repo: ${{ steps.repo.outputs.lc_repo }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Compute lowercase repository
+        id: repo
+        run: echo "lc_repo=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -26,7 +32,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ steps.repo.outputs.lc_repo }}
           tags: |
             type=raw,value=${{ github.sha }}
             type=raw,value=latest
@@ -61,7 +67,7 @@ jobs:
             set -euo pipefail
             export KUBECONFIG=/home/${USER}/.kube/config
             # Met à jour l'image avec le tag = SHA du commit
-            kubectl -n minitroc-laundry set image deploy/minitroc-laundry-web minitroc-laundry=ghcr.io/${{ toLower(github.repository) }}:${{ github.sha }}
+            kubectl -n minitroc-laundry set image deploy/minitroc-laundry-web minitroc-laundry=ghcr.io/${{ needs.build-push.outputs.lc_repo }}:${{ github.sha }}
             # Vérifie le rollout et échoue si ça ne passe pas
             kubectl -n minitroc-laundry rollout status deploy/minitroc-laundry-web --timeout=500s
             # Affiche l'image effective
